@@ -91,7 +91,7 @@ coverage:
 build_test:
 	@echo "Building the package"
 	@rm -rf dist
-	@python3 -m build
+	@python3 -m hatch build
 
 # Tox tests
 .PHONY: tox_tests

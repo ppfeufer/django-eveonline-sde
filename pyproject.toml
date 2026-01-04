@@ -47,5 +47,5 @@ path = "eve_sde/__init__.py"
 
 [tool.hatch.build]
 include = [
-    "/eve_sde",
+    "eve_sde",
 ]
