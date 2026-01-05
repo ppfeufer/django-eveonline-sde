@@ -7,7 +7,7 @@ from django.utils.translation import gettext_lazy as _
 
 from .base import JSONModel
 from .types import ItemType
-from .utils import get_langs_for_field, to_roman_numeral
+from .utils import to_roman_numeral
 
 
 class UniverseBase(JSONModel):

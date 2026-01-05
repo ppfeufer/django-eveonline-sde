@@ -3,10 +3,6 @@
 """
 # Django
 from django.db import models
-from django.db.models import Model
-
-# AA Example App
-from eve_sde.models.utils import get_langs_for_field, lang_key
 
 from .base import JSONModel
 
