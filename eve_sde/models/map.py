@@ -65,41 +65,27 @@ class Region(UniverseBase):
         wormholeClassID : int
     """
     # JsonL Params
-    _filename = "mapRegions.jsonl"
-    _update_fields = [
-        "description",
-        "faction_id_raw",
-        "name",
-        "nebular_id_raw",
-        "wormhole_class_id_raw",
-    ]
+    class Import:
+        filename = "mapRegions.jsonl"
+        lang_fields = ["name", "description"]
+        data_map = (
+            ("description", "description.en"),
+            ("faction_id_raw", "factionID"),
+            ("name", "name.en"),
+            ("nebular_id_raw", "nebulaID"),
+            ("wormhole_class_id_raw", "wormholeClassID"),
+            ("x", "position.x"),
+            ("y", "position.y"),
+            ("z", "position.z"),
+        )
+        update_fields = False
+        custom_names = False
 
     # Model Fields
     description = models.TextField()  # _en
     faction_id_raw = models.IntegerField(null=True, blank=True, default=None)
     nebular_id_raw = models.IntegerField(null=True, blank=True, default=None)
     wormhole_class_id_raw = models.IntegerField(null=True, blank=True, default=None)
-
-    @classmethod
-    def from_jsonl(cls, json_data, names=False):
-        region = cls(
-            id=json_data.get("_key"),
-            name=json_data.get("name", {}).get("en"),
-            description=json_data.get("description", {}).get("en"),
-            faction_id_raw=json_data.get("factionID"),
-            nebular_id_raw=json_data.get("nebulaID"),
-            wormhole_class_id_raw=json_data.get("wormholeClassID"),
-            x=json_data.get("position", {}).get("x"),
-            y=json_data.get("position", {}).get("y"),
-            z=json_data.get("position", {}).get("z"),
-        )
-        for lang, name in json_data.get("name", {}).items():
-            setattr(region, f"name_{lang_key(lang)}", name)
-
-        for lang, name in json_data.get("description", {}).items():
-            setattr(region, f"description_{lang_key(lang)}", name)
-
-        return region
 
 
 class Constellation(UniverseBase):
@@ -125,37 +111,24 @@ class Constellation(UniverseBase):
         wormholeClassID : int
     """
     # JsonL Params
-    _filename = "mapConstellations.jsonl"
-    _update_fields = [
-        "name",
-        "region",
-        "wormhole_class_id_raw",
-        "faction_id_raw",
-
-    ]
-
+    class Import:
+        filename = "mapConstellations.jsonl"
+        lang_fields = ["name"]
+        data_map = (
+            ("faction_id_raw", "factionID"),
+            ("name", "name.en"),
+            ("region_id", "regionID"),
+            ("wormhole_class_id_raw", "wormholeClassID"),
+            ("x", "position.x"),
+            ("y", "position.y"),
+            ("z", "position.z"),
+        )
+        update_fields = False
+        custom_names = False
     # Model Fields
     region = models.ForeignKey(Region, on_delete=models.SET_NULL, null=True, default=None)
-
     faction_id_raw = models.IntegerField(null=True, blank=True, default=None)
     wormhole_class_id_raw = models.IntegerField(null=True, blank=True, default=None)
-
-    @classmethod
-    def from_jsonl(cls, json_data, names=False):
-        constellation = cls(
-            id=json_data.get("_key"),
-            name=json_data.get("name", {}).get("en"),
-            faction_id_raw=json_data.get("factionID"),
-            wormhole_class_id_raw=json_data.get("wormholeClassID"),
-            x=json_data.get("position", {}).get("x"),
-            y=json_data.get("position", {}).get("y"),
-            z=json_data.get("position", {}).get("z"),
-        )
-
-        for lang, name in json_data.get("name", {}).items():
-            setattr(constellation, f"name_{lang_key(lang)}", name)
-
-        return constellation
 
 
 class SolarSystem(UniverseBase):
@@ -203,34 +176,40 @@ class SolarSystem(UniverseBase):
     """
 
     # JsonL Params
-    _filename = "mapSolarSystems.jsonl"
-    _update_fields = [
-        "border",
-        "constellation",
-        "corridor",
-        "fringe",
-        "hub",
-        "international",
-        "luminosity",
-        "name",
-        "radius",
-        "regional",
-        "security_class",
-        "security_status",
-        "star_id_raw",
-        "wormhole_class_id_raw",
-        "visual_effect",
-        "x",
-        "y",
-        "z",
-        "x_2d",
-        "y_2d",
-    ]
+    class Import:
+        filename = "mapSolarSystems.jsonl"
+        lang_fields = ["name"]
+        data_map = (
+            ("border", "border"),
+            ("constellation_id", "constellationID"),
+            ("corridor", "corridor"),
+            ("faction_id_raw", "factionID"),
+            ("fringe", "fringe"),
+            ("hub", "hub"),
+            ("international", "international"),
+            ("luminosity", "luminosity"),
+            ("name", "name.en"),
+            ("radius", "radius"),
+            ("regional", "regional"),
+            ("security_class", "securityClass"),
+            ("security_status", "securityStatus"),
+            ("star_id_raw", "starID"),
+            ("visual_effect", "visualEffect"),
+            ("wormhole_class_id_raw", "wormholeClassID"),
+            ("x", "position.x"),
+            ("y", "position.y"),
+            ("z", "position.z"),
+            ("x_2d", "position2D.x"),
+            ("y_2d", "position2D.y"),
+        )
+        update_fields = False
+        custom_names = False
 
     # Model Fields
     border = models.BooleanField(null=True, blank=True, default=False)
     constellation = models.ForeignKey(Constellation, on_delete=models.SET_NULL, null=True, default=None)
     corridor = models.BooleanField(null=True, blank=True, default=False)
+    faction_id_raw = models.IntegerField(null=True, blank=True, default=None)
     fringe = models.BooleanField(null=True, blank=True, default=False)
     hub = models.BooleanField(null=True, blank=True, default=False)
     international = models.BooleanField(null=True, blank=True, default=False)
@@ -240,44 +219,11 @@ class SolarSystem(UniverseBase):
     security_class = models.CharField(max_length=5, null=True, default=None)
     security_status = models.FloatField(null=True, blank=True, default=None)
     star_id_raw = models.IntegerField(null=True, default=None)
-    wormhole_class_id_raw = models.IntegerField(null=True, blank=True, default=None)
     visual_effect = models.CharField(max_length=50, null=True, default=None)
+    wormhole_class_id_raw = models.IntegerField(null=True, blank=True, default=None)
 
     x_2d = models.FloatField(null=True, default=None, blank=True)
     y_2d = models.FloatField(null=True, default=None, blank=True)
-
-    @classmethod
-    def from_jsonl(cls, json_data, names=False):
-        system = cls(
-            id=json_data.get("_key"),
-
-            border=json_data.get("border"),
-            constellation_id=json_data.get("constellationID"),
-            fringe=json_data.get("fringe"),
-            hub=json_data.get("hub"),
-            international=json_data.get("international"),
-            luminosity=json_data.get("luminosity"),
-            name=json_data.get("name", {}).get("en"),
-            radius=json_data.get("radius"),
-            regional=json_data.get("regional"),
-            security_class=json_data.get("securityClass"),
-            security_status=json_data.get("securityStatus"),
-            star_id_raw=json_data.get("starID"),
-            wormhole_class_id_raw=json_data.get("wormholeClassID"),
-            visual_effect=json_data.get("visualEffect"),
-
-            x_2d=json_data.get("position2D", {}).get("x"),
-            y_2d=json_data.get("position2D", {}).get("y"),
-
-            x=json_data.get("position", {}).get("x"),
-            y=json_data.get("position", {}).get("y"),
-            z=json_data.get("position", {}).get("z"),
-        )
-
-        for lang, name in json_data.get("name", {}).items():
-            setattr(system, f"name_{lang_key(lang)}", name)
-
-        return system
 
 
 class Stargate(UniverseBase):
@@ -295,15 +241,19 @@ class Stargate(UniverseBase):
         solarSystemID : int
         typeID : int
     """
-    _filename = "mapStargates.jsonl"
-    _update_fields = False
+    class Import:
+        filename = "mapStargates.jsonl"
+        lang_fields = False
+        update_fields = False
+        custom_names = False
+        data_map = False
 
     destination = models.ForeignKey(
         SolarSystem,
         on_delete=models.CASCADE,
         related_name="+"
     )
-    eve_type_id_raw = models.IntegerField()
+    item_type_id_raw = models.IntegerField()
     solar_system = models.ForeignKey(
         SolarSystem,
         on_delete=models.CASCADE,
@@ -326,7 +276,7 @@ class Stargate(UniverseBase):
         return cls(
             id=json_data.get("_key"),
             destination_id=dst_id,
-            eve_type_id_raw=json_data.get("typeID"),
+            item_type_id_raw=json_data.get("typeID"),
             name=f"{system_names[src_id]} ≫ {system_names[dst_id]}",
             solar_system_id=src_id,
         )
@@ -346,10 +296,6 @@ class Planet(UniverseBase):
         _key : int
         asteroidBeltIDs : list
         * attributes : dict
-            attributes.heightMap1 : int
-            attributes.heightMap2 : int
-            attributes.population : bool
-            attributes.shaderPreset : int
         celestialIndex : int
         moonIDs : list
         orbitID : int
@@ -360,22 +306,9 @@ class Planet(UniverseBase):
         radius : int
         solarSystemID : int
         * statistics : dict
-            statistics.density : float
-            statistics.eccentricity : float
-            statistics.escapeVelocity : float
-            statistics.locked : bool
-            statistics.massDust : float
-            statistics.massGas : float
-            statistics.orbitPeriod : float
-            statistics.orbitRadius : float
-            statistics.pressure : float
-            statistics.rotationRate : float
-            statistics.spectralClass : str
-            statistics.surfaceGravity : float
-            statistics.temperature : float
         typeID : int
         npcStationIDs : list
-        uniqueName : dict
+        * uniqueName : dict
             uniqueName.de : str
             uniqueName.en : str
             uniqueName.es : str
@@ -387,19 +320,24 @@ class Planet(UniverseBase):
 
     * currently not included make an issue with use case to get it added
     """
-    _filename = "mapPlanets.jsonl"
-    _update_fields = [
-        "celestial_index",
-        "name",
-        "solar_system",
-        "x",
-        "y",
-        "z",
-        *get_langs_for_field("name")
-    ]
+    class Import:
+        filename = "mapPlanets.jsonl"
+        lang_fields = False
+        update_fields = False
+        custom_names = True
+        data_map = (
+            ("celestial_index", "celestialIndex"),
+            ("orbit_id_raw", "orbitID"),
+            ("radius", "radius"),
+            ("solar_system_id", "solarSystemID"),
+            ("item_type_id_raw", "typeID"),
+            ("x", "position.x"),
+            ("y", "position.y"),
+            ("z", "position.z"),
+        )
 
     celestial_index = models.IntegerField()
-    eve_type_id_raw = models.IntegerField()
+    item_type_id_raw = models.IntegerField()
     orbit_id_raw = models.IntegerField()
     orbit_index = models.IntegerField()
     radius = models.IntegerField()
@@ -423,35 +361,8 @@ class Planet(UniverseBase):
         }
 
     @classmethod
-    def from_jsonl(cls, json_data, system_names):
-        name = f"{system_names[json_data.get('solarSystemID')]['name']} {to_roman_numeral(json_data.get('celestialIndex'))}"
-        planet = cls(
-            id=json_data.get("_key"),
-            celestial_index=json_data.get("celestialIndex"),
-            eve_type_id_raw=json_data.get("typeID"),
-            name=name,
-            orbit_id_raw=json_data.get("orbitID"),
-            orbit_index=json_data.get("orbitIndex"),
-            radius=json_data.get("radius"),
-            solar_system_id=json_data.get("solarSystemID"),
-            x=json_data.get("position", {}).get("x"),
-            y=json_data.get("position", {}).get("y"),
-            z=json_data.get("position", {}).get("z"),
-        )
-
-        for lang, name in system_names.get(json_data.get("solarSystemID"), {}).items():
-            if lang.startswith("name_") and name is not None:
-                # todo make this translatable properly
-                _name = f"{name} {to_roman_numeral(json_data.get('celestialIndex'))}"
-                setattr(planet, lang, _name)
-
-        if json_data.get("uniqueName", False):
-            for lang, name in json_data.get("name", {}).items():
-                setattr(planet, f"name_{lang_key(lang)}", name)
-                if lang == "en":
-                    planet.name = name
-
-        return planet
+    def format_name(cls, json_data, system_names):
+        return f"{system_names[json_data.get('solarSystemID')]['name']} {to_roman_numeral(json_data.get('celestialIndex'))}"
 
 
 class Moon(UniverseBase):
@@ -461,9 +372,6 @@ class Moon(UniverseBase):
     mapMoons.jsonl
         _key : int
         * attributes : dict
-            attributes.heightMap1 : int
-            attributes.heightMap2 : int
-            attributes.shaderPreset : int
         celestialIndex : int
         orbitID : int
         orbitIndex : int
@@ -474,19 +382,6 @@ class Moon(UniverseBase):
         radius : float
         solarSystemID : int
         * statistics : dict
-            statistics.density : float
-            statistics.eccentricity : float
-            statistics.escapeVelocity : float
-            statistics.locked : bool
-            statistics.massDust : float
-            statistics.massGas : float
-            statistics.orbitPeriod : float
-            statistics.orbitRadius : float
-            statistics.pressure : float
-            statistics.rotationRate : float
-            statistics.spectralClass : str
-            statistics.surfaceGravity : float
-            statistics.temperature : float
         typeID : int
         npcStationIDs : list
         uniqueName : dict
@@ -501,24 +396,30 @@ class Moon(UniverseBase):
 
     * currently not included make an issue with use case to get it added
     """
-    _filename = "mapMoons.jsonl"
-    _update_fields = [
-        "name",
-        "solar_system",
-        "planet",
-        "celestial_index",
-        "eve_type_id_raw",
-        "x",
-        "y",
-        "z",
-        # *get_langs_for_field("name")
-    ]
+    class Import:
+        filename = "mapMoons.jsonl"
+        lang_fields = False
+        update_fields = False
+        custom_names = True
+        data_map = (
+            ("celestial_index", "celestialIndex"),
+            ("item_type_id_raw", "typeID"),
+            ("orbit_id_raw", "orbitID"),
+            ("orbit_index", "orbitIndex"),
+            ("planet_id", "orbitID"),
+            ("radius", "radius"),
+            ("solar_system_id", "solarSystemID"),
+            ("x", "position.x"),
+            ("y", "position.y"),
+            ("z", "position.z"),
+        )
 
     celestial_index = models.IntegerField()
-    eve_type_id_raw = models.IntegerField()
+    item_type_id_raw = models.IntegerField()
     orbit_id_raw = models.IntegerField()
     orbit_index = models.IntegerField()
     planet = models.ForeignKey(Planet, on_delete=models.CASCADE)
+    radius = models.IntegerField()
     solar_system = models.ForeignKey(SolarSystem, on_delete=models.CASCADE, related_name="moon")
 
     def __str__(self):
@@ -533,26 +434,5 @@ class Moon(UniverseBase):
         }
 
     @classmethod
-    def from_jsonl(cls, json_data, planet_names):
-        name = f"{planet_names[json_data.get('orbitID')]['name']} - Moon {json_data.get('orbitIndex')}"
-        moon = cls(
-            id=json_data.get("_key"),
-            celestial_index=json_data.get("celestialIndex"),
-            eve_type_id_raw=json_data.get("typeID"),
-            name=name,
-            orbit_id_raw=json_data.get("orbitID"),
-            orbit_index=json_data.get("orbitIndex"),
-            planet_id=json_data.get("orbitID"),
-            solar_system_id=json_data.get("solarSystemID"),
-            x=json_data.get("position", {}).get("x"),
-            y=json_data.get("position", {}).get("y"),
-            z=json_data.get("position", {}).get("z"),
-        )
-
-        if json_data.get("uniqueName", False):
-            for lang, name in json_data.get("name", {}).items():
-                setattr(moon, f"name_{lang_key(lang)}", name)
-                if lang == "en":
-                    moon.name = name
-
-        return moon
+    def format_name(cls, json_data, planet_names):
+        return f"{planet_names[json_data.get('orbitID')]['name']} - Moon {json_data.get('orbitIndex')}"

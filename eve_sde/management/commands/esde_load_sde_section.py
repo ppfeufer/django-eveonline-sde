@@ -2,11 +2,16 @@
 from django.core.management.base import BaseCommand
 
 # AA Example App
-from eve_sde.sde_tasks import process_from_sde
+from eve_sde.sde_tasks import (
+    download_extract_sde,
+    process_from_sde,
+    process_section_of_sde,
+)
 
 
 class Command(BaseCommand):
     help = "Load SDE"
 
     def handle(self, *args, **options):
-        process_from_sde(4)
+        # download_extract_sde()
+        process_from_sde()

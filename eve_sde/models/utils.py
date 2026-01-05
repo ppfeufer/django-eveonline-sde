@@ -1,3 +1,7 @@
+# Standard Library
+import operator
+from functools import reduce
+
 # Django
 from django.conf import settings
 
@@ -49,3 +53,11 @@ def get_langs_for_field(field_name):
     for _l in get_langs():
         out.append(f"{field_name}_{_l}")
     return out
+
+
+def val_from_dict(key, dict):
+    ""
+    try:
+        return reduce(operator.getitem, key.split("."), dict)
+    except KeyError:
+        return None

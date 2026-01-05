@@ -9,6 +9,7 @@ import zipfile
 import httpx
 
 from .models.map import Constellation, Moon, Planet, Region, SolarSystem, Stargate
+from .models.types import ItemCategory, ItemGroup, ItemType
 
 logger = logging.getLogger(__name__)
 
@@ -21,12 +22,11 @@ SDE_PARTS_TO_UPDATE = [
     # # System stuffs
     Stargate,
     Planet,
-    Moon
-    # MapSystemMoon,
+    Moon,
     # # Types
-    # EveItemCategory,
-    # EveItemGroup,
-    # EveItemType,
+    ItemCategory,
+    ItemGroup,
+    ItemType,
     # EveItemDogmaAttribute,
     # # Type Materials
     # InvTypeMaterials,

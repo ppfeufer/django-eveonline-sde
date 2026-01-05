@@ -5,20 +5,44 @@ import logging
 # Django
 from django.db import models
 
+from .utils import get_langs, get_langs_for_field, lang_key, val_from_dict
+
 logger = logging.getLogger(__name__)
 
 
 class JSONModel(models.Model):
-    _filename = "not_set.jsonl"
-    _update_fields = False
+    class Import:
+        filename = "not_set.jsonl"
+        data_map = False
+        lang_fields = False
+        custom_names = False
+        update_fields = False
 
     @classmethod
     def from_jsonl(cls, json_data, name_lookup=False):
-        raise AttributeError("Not Implemented")
+        if cls.Import.data_map:
+            _model = cls(id=val_from_dict("_key", json_data))
+            for f, k in cls.Import.data_map:
+                setattr(_model, f, val_from_dict(k, json_data))
+            if cls.Import.lang_fields:
+                for _f in cls.Import.lang_fields:
+                    for lang, _val in json_data.get(_f, {}).items():
+                        setattr(_model, f"{_f}_{lang_key(lang)}", _val)
+            if cls.Import.custom_names:
+                setattr(_model, f"name", cls.format_name(json_data, name_lookup))
+
+            return _model
+
+        else:
+            raise AttributeError("Not Implemented")
 
     @classmethod
     def name_lookup(cls):
         return False
+
+    @classmethod
+    def format_name(cls, data, name_lookup):
+        return data.get("name")
 
     @classmethod
     def create_update(cls, create_model_list: list["JSONModel"], update_model_list: list["JSONModel"]):
@@ -27,10 +51,20 @@ class JSONModel(models.Model):
             ignore_conflicts=True,
             batch_size=500
         )
-        if cls._update_fields:
+        if cls.Import.update_fields:
             cls.objects.bulk_update(
                 update_model_list,
-                cls._update_fields,
+                cls.Import.update_fields,
+                batch_size=500
+            )
+        elif cls.Import.data_map:
+            _fields = [_f[0] for _f in cls.Import.data_map]
+            if cls.Import.lang_fields:
+                for _f in cls.Import.lang_fields:
+                    _fields += get_langs_for_field(_f)
+            cls.objects.bulk_update(
+                update_model_list,
+                _fields,
                 batch_size=500
             )
 
@@ -43,9 +77,9 @@ class JSONModel(models.Model):
 
         pks = set(
             cls.objects.all().values_list("pk", flat=True)
-        ) if cls._update_fields else False
+        )  # if cls.Import.update_fields else False
 
-        file_path = f"{folder_name}/{cls._filename}"
+        file_path = f"{folder_name}/{cls.Import.filename}"
 
         total_lines = 0
         with open(file_path) as json_file:
