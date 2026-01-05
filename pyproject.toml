@@ -5,7 +5,7 @@ requires = [
 ]
 
 [project]
-name = "django-eve-sde"
+name = "django-eveonline-sde"
 description = "Eve Online SDE Export in Django Model form"
 readme = "README.md"
 keywords = [
@@ -39,8 +39,8 @@ dynamic = [
 dependencies = [
     "allianceauth>=4.3.1,<5",
 ]
-urls.Changelog = "https://github.com/Solar-Helix-Independent-Transport/django-eve-sde/blob/master/CHANGELOG.md"
-urls."Issue / Bug Reports" = "https://github.com/Solar-Helix-Independent-Transport/django-eve-sde/issues"
+urls.Changelog = "https://github.com/Solar-Helix-Independent-Transport/django-eveonline-sde/blob/master/CHANGELOG.md"
+urls."Issue / Bug Reports" = "https://github.com/Solar-Helix-Independent-Transport/django-eveonline-sde/issues"
 
 [tool.hatch.version]
 path = "eve_sde/__init__.py"
