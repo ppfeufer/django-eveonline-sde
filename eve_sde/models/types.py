@@ -222,7 +222,7 @@ class ItemTypeMaterials(JSONModel):
     item_type = models.ForeignKey(
         ItemType,
         on_delete=models.CASCADE,
-        related_name="+",
+        related_name="materials",
         null=True,
         blank=True,
         default=None
@@ -264,7 +264,10 @@ class ItemTypeMaterials(JSONModel):
         default_permissions = ()
 
     def __str__(self):
-        return f"{self.name} ({self.id})"
+        qty = f" x {self.quantity}"
+        if self.quantity_max and self.quantity_min:
+            qty = f" x ({self.quantity_min} - {self.quantity_max})"
+        return f"{self.item_type.name} ({self.material_item_type.name}{qty})"
 
 
 class DogmaAttributeCategory(TypeBase):

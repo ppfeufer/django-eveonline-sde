@@ -41,24 +41,10 @@ class Region(UniverseBase):
         _key : int
         constellationIDs : list
         description : dict
-            description.de : str
-            description.en : str
-            description.es : str
-            description.fr : str
-            description.ja : str
-            description.ko : str
-            description.ru : str
-            description.zh : str
+            ...
         factionID : int
         name : dict
-            name.de : str
-            name.en : str
-            name.es : str
-            name.fr : str
-            name.ja : str
-            name.ko : str
-            name.ru : str
-            name.zh : str
+            ...
         nebulaID : int
         position : dict
             position.x : float
@@ -96,14 +82,7 @@ class Constellation(UniverseBase):
         _key : int
         factionID : int
         name : dict
-            name.de : str
-            name.en : str
-            name.es : str
-            name.fr : str
-            name.ja : str
-            name.ko : str
-            name.ru : str
-            name.zh : str
+            ...
         position : dict
             position.x : float
             position.y : float
@@ -128,7 +107,12 @@ class Constellation(UniverseBase):
         update_fields = False
         custom_names = False
     # Model Fields
-    region = models.ForeignKey(Region, on_delete=models.SET_NULL, null=True, default=None)
+    region = models.ForeignKey(
+        Region,
+        on_delete=models.CASCADE,
+        null=True,
+        default=None
+    )
     faction_id_raw = models.IntegerField(null=True, blank=True, default=None)
     wormhole_class_id_raw = models.IntegerField(null=True, blank=True, default=None)
 
@@ -143,14 +127,7 @@ class SolarSystem(UniverseBase):
         international : bool
         luminosity : float
         name : dict
-            name.de : str
-            name.en : str
-            name.es : str
-            name.fr : str
-            name.ja : str
-            name.ko : str
-            name.ru : str
-            name.zh : str
+            ...
         planetIDs : list
         position : dict
             position.x : float
@@ -269,7 +246,7 @@ class Stargate(UniverseBase):
     solar_system = models.ForeignKey(
         SolarSystem,
         on_delete=models.CASCADE,
-        related_name="+",
+        related_name="stargates",
         null=True,
         blank=True,
         default=None
@@ -325,14 +302,7 @@ class Planet(UniverseBase):
         typeID : int
         npcStationIDs : list
         * uniqueName : dict
-            uniqueName.de : str
-            uniqueName.en : str
-            uniqueName.es : str
-            uniqueName.fr : str
-            uniqueName.ja : str
-            uniqueName.ko : str
-            uniqueName.ru : str
-            uniqueName.zh : str
+            ...
 
     * currently not included make an issue with use case to get it added
     """
@@ -369,7 +339,7 @@ class Planet(UniverseBase):
     solar_system = models.ForeignKey(
         SolarSystem,
         on_delete=models.CASCADE,
-        related_name="+",
+        related_name="planets",
         null=True,
         blank=True,
         default=None
@@ -420,14 +390,7 @@ class Moon(UniverseBase):
         typeID : int
         npcStationIDs : list
         uniqueName : dict
-            uniqueName.de : str
-            uniqueName.en : str
-            uniqueName.es : str
-            uniqueName.fr : str
-            uniqueName.ja : str
-            uniqueName.ko : str
-            uniqueName.ru : str
-            uniqueName.zh : str
+            ...
 
     * currently not included make an issue with use case to get it added
     """
@@ -462,12 +425,19 @@ class Moon(UniverseBase):
     )
     orbit_id_raw = models.IntegerField(null=True, blank=True, default=None)
     orbit_index = models.IntegerField(null=True, blank=True, default=None)
-    planet = models.ForeignKey(Planet, on_delete=models.CASCADE, related_name="+", null=True, blank=True, default=None)
+    planet = models.ForeignKey(
+        Planet,
+        on_delete=models.CASCADE,
+        related_name="moons",
+        null=True,
+        blank=True,
+        default=None
+    )
     radius = models.IntegerField(null=True, blank=True, default=None)
     solar_system = models.ForeignKey(
         SolarSystem,
         on_delete=models.CASCADE,
-        related_name="+",
+        related_name="moons",
         null=True,
         blank=True,
         default=None
