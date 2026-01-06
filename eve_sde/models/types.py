@@ -509,7 +509,7 @@ class TypeDogma(JSONModel):
     item_type = models.ForeignKey(
         ItemType,
         on_delete=models.CASCADE,
-        related_name="+",
+        related_name="dogma",
         null=True,
         blank=True,
         default=None
