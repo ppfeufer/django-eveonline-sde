@@ -17,6 +17,30 @@ See `eve_sde/sde_types.txt` for an idea of the top level fields that are availab
 - Planet
 - Moon
 - Stargate
+- Item Groups
+- Item Categories
+- Item Types
+- Item Dogma
+- Dogma Categories
+- Dogma Units
+- Dogma Attributes
+
+## Setup
+
+1. `pip install `
+1. modify your `local.py` as `modeltranslation` needs to be first in the list.
+
+```
+INSTALLED_APPS = ["modeltranslation",] + INSTALLED_APPS
+
+INSTALLED_APPS += [
+..... the rest of your apps
+]
+```
+
+3. Add `"eve_sde",` to your `INSTALLED_APPS`
+1. migrate etc
+1. `python manage.py esde_laod_sde`
 
 ## Credits
 
