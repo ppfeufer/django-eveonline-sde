@@ -548,4 +548,4 @@ class TypeDogma(JSONModel):
         default_permissions = ()
 
     def __str__(self):
-        return f"{self.item_type} ({self.dogma_attribute.name})"
+        return f"{self.item_type} ({self.dogma_attribute_id}: {self.dogma_attribute.name})"
