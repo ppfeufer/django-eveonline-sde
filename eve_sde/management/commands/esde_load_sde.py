@@ -1,14 +1,16 @@
 # Standard Library
-import json
+import time
 
 # Django
 from django.core.management.base import BaseCommand
 
-from ...tasks import update_models_from_sde
+from ...sde_tasks import process_from_sde
 
 
 class Command(BaseCommand):
     help = "Load SDE"
 
     def handle(self, *args, **options):
-        update_models_from_sde()
+        start = time.perf_counter()
+        process_from_sde()
+        print(f"Took {time.perf_counter() - start:,.2f}s")

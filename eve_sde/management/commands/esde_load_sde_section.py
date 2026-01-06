@@ -15,4 +15,5 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         download_extract_sde()
         # process_from_sde()
-        process_section_of_sde(3)
+        # process_section_of_sde(8)
+        process_section_of_sde(9)

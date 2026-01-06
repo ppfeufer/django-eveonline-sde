@@ -124,6 +124,7 @@ def process_from_sde(start_from: int = 0):
             logger.info(f"Skipping {mdl}")
         count += 1
 
+    set_sde_version()
     delete_sde_folder()
 
 

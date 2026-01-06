@@ -5,9 +5,10 @@ from datetime import datetime, timezone
 
 # Django
 from django.db import models
+from django.utils.translation import gettext as _
 
 from .admin import EveSDESection
-from .utils import val_from_dict
+from .utils import get_langs, get_langs_for_field, lang_key, val_from_dict
 
 logger = logging.getLogger(__name__)
 
@@ -27,12 +28,16 @@ class JSONModel(models.Model):
             _model.pk = val_from_dict("_key", json_data)
         for f, k in cls.Import.data_map:
             setattr(_model, f, val_from_dict(k, json_data))
-        # if cls.Import.lang_fields:
-        #     for _f in cls.Import.lang_fields:
-        #         for lang, _val in json_data.get(_f, {}).items():
-        #             setattr(_model, f"{_f}_{lang_key(lang)}", _val)
+        if cls.Import.lang_fields:
+            for _f in cls.Import.lang_fields:
+                for lang, _val in json_data.get(_f, {}).items():
+                    setattr(_model, f"{_f}_{lang_key(lang)}", _val)
         if cls.Import.custom_names:
-            setattr(_model, f"name", cls.format_name(json_data, name_lookup))
+            setattr(_model, "name", cls.format_name(json_data, name_lookup, "en"))
+            for lang in get_langs():
+                _nme = cls.format_name(json_data, name_lookup, lang=lang_key(lang))
+                if _model.name != _nme:
+                    setattr(_model, f"name_{lang_key(lang)}", _nme)
 
         return _model
 
@@ -43,13 +48,20 @@ class JSONModel(models.Model):
         else:
             raise AttributeError("Not Implemented")
 
+    @property
+    def localized_name(self):
+        return f"{_(self.name)}"
+
     @classmethod
     def name_lookup(cls):
         return False
 
     @classmethod
-    def format_name(cls, data, name_lookup):
-        return data.get("name")
+    def format_name(cls, data, name_lookup, lang: str = False):
+        if not lang:
+            return data.get("name")
+        else:
+            return data.get(f"name_{lang}")
 
     @classmethod
     def create_update(cls, create_model_list: list["JSONModel"], update_model_list: list["JSONModel"]):
@@ -67,9 +79,11 @@ class JSONModel(models.Model):
             )
         elif cls.Import.data_map:
             _fields = [_f[0] for _f in cls.Import.data_map]
-            # if cls.Import.lang_fields:
-            #     for _f in cls.Import.lang_fields:
-            #         _fields += get_langs_for_field(_f)
+            if cls.Import.lang_fields:
+                for _f in cls.Import.lang_fields:
+                    _fields += get_langs_for_field(_f)
+            if cls.Import.custom_names:
+                _fields += get_langs_for_field("name")
             cls.objects.bulk_update(
                 update_model_list,
                 _fields,

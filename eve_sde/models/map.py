@@ -5,9 +5,10 @@
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
+from ..managers.map import MoonManager, PlanetManager
 from .base import JSONModel
 from .types import ItemType
-from .utils import to_roman_numeral
+from .utils import get_langs_for_field, to_roman_numeral
 
 
 class UniverseBase(JSONModel):
@@ -351,6 +352,8 @@ class Planet(UniverseBase):
             ("z", "position.z"),
         )
 
+    objects = PlanetManager()
+
     celestial_index = models.IntegerField(null=True, blank=True, default=None)
     item_type = models.ForeignKey(
         ItemType,
@@ -377,17 +380,24 @@ class Planet(UniverseBase):
     def __str__(self):
         return (self.name)
 
+    @property
+    def localized_name(self):
+        return f"{_(self.solar_system.name)} {to_roman_numeral(self.celestial_index)}"
+
     @classmethod
     def name_lookup(cls):
-        # _langs = get_langs_for_field("name")
+        _langs = get_langs_for_field("name")
         return {
             s.get("id"): s for s in
-            SolarSystem.objects.all().values("id", "name")  # , *_langs)
+            SolarSystem.objects.all().values("id", "name", *_langs)
         }
 
     @classmethod
-    def format_name(cls, json_data, system_names):
-        return f"{system_names[json_data.get('solarSystemID')]['name']} {to_roman_numeral(json_data.get('celestialIndex'))}"
+    def format_name(cls, json_data, system_names, lang: str = None):
+        system = system_names[json_data.get('solarSystemID')][f"name_{lang}"]
+        if not system:
+            system = system_names[json_data.get('solarSystemID')][f"name"]
+        return f"{system} {to_roman_numeral(json_data.get('celestialIndex'))}"
 
 
 class Moon(UniverseBase):
@@ -439,6 +449,8 @@ class Moon(UniverseBase):
             ("z", "position.z"),
         )
 
+    objects = MoonManager()
+
     celestial_index = models.IntegerField(null=True, blank=True, default=None)
     item_type = models.ForeignKey(
         ItemType,
@@ -464,14 +476,36 @@ class Moon(UniverseBase):
     def __str__(self):
         return (self.name)
 
+    @property
+    def localized_name(self):
+        return f"{_(self.solar_system.name)} {to_roman_numeral(self.celestial_index)} - {_(self.item_type.name)} {self.orbit_index}"
+
     @classmethod
     def name_lookup(cls):
-        # _langs = get_langs_for_field("name")
-        return {
+        _langs = get_langs_for_field("name")
+        planets = {
             s.get("id"): s for s in
-            Planet.objects.all().values("id", "name")  # , *_langs)
+            Planet.objects.all().values("id", "name", *_langs)
+        }
+        item_types = {
+            s.get("id"): s for s in
+            ItemType.objects.filter(id=14).values("id", "name", *_langs)
+        }
+        return {
+            "planet": planets,
+            "item_type": item_types
         }
 
     @classmethod
-    def format_name(cls, json_data, planet_names):
-        return f"{planet_names[json_data.get('orbitID')]['name']} - Moon {json_data.get('orbitIndex')}"
+    def format_name(cls, json_data, name_lookup, lang):
+        planet = name_lookup["planet"][json_data.get('orbitID')][f"name_{lang}"]
+        if not planet:
+            planet = name_lookup["planet"][json_data.get('orbitID')][f"name"]
+
+        moon = name_lookup["item_type"].get(json_data.get("typeID"), {}).get(f"name_{lang}", "Moon")
+        if not moon:
+            moon = name_lookup["item_type"].get(json_data.get("typeID"), {}).get(f"name", "Moon")
+
+        return (
+            f"{planet} - {moon} {json_data.get('orbitIndex')}"
+        )
