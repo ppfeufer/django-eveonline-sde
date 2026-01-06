@@ -30,8 +30,12 @@ class JSONModel(models.Model):
             setattr(_model, f, val_from_dict(k, json_data))
         if cls.Import.lang_fields:
             for _f in cls.Import.lang_fields:
-                for lang, _val in json_data.get(_f, {}).items():
-                    setattr(_model, f"{_f}_{lang_key(lang)}", _val)
+                _fld = _f
+                _key = _f
+                if isinstance(_f, tuple):
+                    _fld, _key = _f
+                for lang, _val in json_data.get(_key, {}).items():
+                    setattr(_model, f"{_fld}_{lang_key(lang)}", _val)
         if cls.Import.custom_names:
             setattr(_model, "name", cls.format_name(json_data, name_lookup, "en"))
             for lang in get_langs():
@@ -81,7 +85,10 @@ class JSONModel(models.Model):
             _fields = [_f[0] for _f in cls.Import.data_map]
             if cls.Import.lang_fields:
                 for _f in cls.Import.lang_fields:
-                    _fields += get_langs_for_field(_f)
+                    _fld = _f
+                    if isinstance(_f, tuple):
+                        _fld, _key = _f
+                    _fields += get_langs_for_field(_fld)
             if cls.Import.custom_names:
                 _fields += get_langs_for_field("name")
             cls.objects.bulk_update(

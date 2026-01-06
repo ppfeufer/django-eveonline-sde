@@ -14,7 +14,16 @@ import httpx
 from eve_sde.models import EveSDE
 
 from .models.map import Constellation, Moon, Planet, Region, SolarSystem, Stargate
-from .models.types import ItemCategory, ItemGroup, ItemType, ItemTypeMaterials
+from .models.types import (
+    DogmaAttribute,
+    DogmaAttributeCategory,
+    DogmaUnit,
+    ItemCategory,
+    ItemGroup,
+    ItemType,
+    ItemTypeMaterials,
+    TypeDogma,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -25,6 +34,10 @@ SDE_PARTS_TO_UPDATE = [
     ItemGroup,
     ItemType,
     ItemTypeMaterials,
+    DogmaUnit,
+    DogmaAttributeCategory,
+    DogmaAttribute,
+    TypeDogma,
     # # Map
     Region,
     Constellation,
