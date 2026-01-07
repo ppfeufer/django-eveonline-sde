@@ -182,7 +182,7 @@ jobs:
         env:
           STACKMANAGER_VERSION: 9999
         run: |
-          python -m build
+          make build_test
 
       # Upload Build Artifacts
       - name: Upload Build Artifacts
