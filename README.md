@@ -40,7 +40,7 @@ INSTALLED_APPS += [
 
 3. Add `"eve_sde",` to your `INSTALLED_APPS`
 1. migrate etc
-1. `python manage.py esde_laod_sde`
+1. `python manage.py esde_load_sde`
 1. Add periodic task for `0 12 * * * check_for_sde_updates` SDE updates tend to happen at DT.
 
 ## Credits
