@@ -27,21 +27,34 @@ See `eve_sde/sde_types.txt` for an idea of the top level fields that are availab
 
 ## Setup
 
-1. `pip install `
-1. modify your `local.py` as `modeltranslation` needs to be first in the list.
+- `pip install `
 
-```
-INSTALLED_APPS = ["modeltranslation",] + INSTALLED_APPS
+- modify your `local.py` as `modeltranslation` needs to be first in the list.
 
-INSTALLED_APPS += [
-..... the rest of your apps
-]
-```
+  ```python
+  INSTALLED_APPS = ["modeltranslation",] + INSTALLED_APPS
 
-3. Add `"eve_sde",` to your `INSTALLED_APPS`
-1. migrate etc
-1. `python manage.py esde_load_sde`
-1. Add periodic task for `0 12 * * * check_for_sde_updates` SDE updates tend to happen at DT.
+  INSTALLED_APPS += [
+  ..... the rest of your apps
+  ]
+  ```
+
+- Add `"eve_sde",` to your `INSTALLED_APPS`
+
+- migrate etc
+
+- `python manage.py esde_load_sde`
+
+- Add a periodic task to check for SDE updates, which tend to happend after downtime.
+
+  ```python
+  if "eve_sde" in INSTALLED_APPS:
+      # Run at 12:00 UTC each day
+      CELERYBEAT_SCHEDULE["EVE SDE :: Check for SDE Updates"] = {
+          "task": "eve_sde.tasks.check_for_sde_updates",
+          "schedule": crontab(minute="0", hour="12"),
+      }
+  ```
 
 ## Credits
 
