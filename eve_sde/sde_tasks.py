@@ -156,5 +156,6 @@ def set_sde_version():
     _o = EveSDE.get_solo()
     _o.build_number = build
     _o.release_date = release
+    _o.last_check_date = datetime.now(tz=timezone.utc)
     _o.save()
     logger.info(f"SDE Updated to Build:{build} from:{release}")

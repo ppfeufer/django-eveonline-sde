@@ -6,6 +6,9 @@ import logging
 # Third Party
 from celery import chain, shared_task
 
+# Django
+from django.utils import timezone
+
 # Alliance Auth
 from allianceauth.services.tasks import QueueOnce
 
@@ -32,7 +35,10 @@ logger = logging.getLogger(__name__)
 def check_for_sde_updates(self):
     if not check_sde_version():
         update_models_from_sde.delay()
-    EveSDE.get_solo().save()
+
+    _o = EveSDE.get_solo()
+    _o.last_check_date = timezone.now()
+    _o.save()
 
 
 @shared_task(
