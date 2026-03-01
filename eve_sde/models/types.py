@@ -359,89 +359,163 @@ class DogmaAttribute(TypeBase):
     unit = models.ForeignKey(DogmaUnit, null=True, blank=True, default=None, on_delete=models.CASCADE)
 
 
-# class DogmaEffect(TypeBase):
-#     """
-#     dogmaEffects.jsonl
-#         _key : int
-#         disallowAutoRepeat : bool
-#         dischargeAttributeID : int
-#         durationAttributeID : int
-#         effectCategoryID : int
-#         electronicChance : bool
-#         guid : str
-#         isAssistance : bool
-#         isOffensive : bool
-#         isWarpSafe : bool
-#         name : str
-#         propulsionChance : bool
-#         published : bool
-#         rangeChance : bool
-#         distribution : int
-#         falloffAttributeID : int
-#         rangeAttributeID : int
-#         trackingSpeedAttributeID : int
-#         description : dict
-#             description.de : str
-#             description.en : str
-#             description.es : str
-#             description.fr : str
-#             description.ja : str
-#             description.ko : str
-#             description.ru : str
-#             description.zh : str
-#         displayName : dict
-#             displayName.de : str
-#             displayName.en : str
-#             displayName.es : str
-#             displayName.fr : str
-#             displayName.ja : str
-#             displayName.ko : str
-#             displayName.ru : str
-#             displayName.zh : str
-#         iconID : int
-#         * modifierInfo : list
-#         npcUsageChanceAttributeID : int
-#         npcActivationChanceAttributeID : int
-#         fittingUsageChanceAttributeID : int
-#         resistanceAttributeID : int
-#     """
-#     # JsonL Params
-#     class Import:
-#         filename = "dogmaUnits.jsonl"
-#         lang_fields = [("display_name", "displayName"), "description"]
-#         data_map = (
-#             ("name", "name"),
-#             # TODO this...
-#         )
-#         update_fields = False
-#         custom_names = False
+class DogmaEffect(TypeBase):
+    """
+    dogmaEffects.jsonl
+        _key : int
+        disallowAutoRepeat : bool
+        dischargeAttributeID : int
+        durationAttributeID : int
+        effectCategoryID : int
+        electronicChance : bool
+        guid : str
+        isAssistance : bool
+        isOffensive : bool
+        isWarpSafe : bool
+        name : str
+        propulsionChance : bool
+        published : bool
+        rangeChance : bool
+        distribution : int
+        falloffAttributeID : int
+        rangeAttributeID : int
+        trackingSpeedAttributeID : int
+        description : dict
+            ...
+        displayName : dict
+            ...
+        iconID : int
+        * modifierInfo : list
+        npcUsageChanceAttributeID : int
+        npcActivationChanceAttributeID : int
+        fittingUsageChanceAttributeID : int
+        resistanceAttributeID : int
+    """
+    # JsonL Params
+    class Import:
+        filename = "dogmaEffects.jsonl"
+        lang_fields = [("display_name", "displayName"), "description"]
+        data_map = (
+            ("disallow_auto_repeat", "disallowAutoRepeat"),
+            ("discharge_attribute_id_raw", "dischargeAttributeID"),
+            ("duration_attribute_id_raw", "durationAttributeID"),
+            ("effect_category_id_raw", "effectCategoryID"),
+            ("electronic_chance", "electronicChance"),
+            ("guid", "guid"),
+            ("is_assistance", "isAssistance"),
+            ("is_offensive", "isOffensive"),
+            ("is_warp_safe", "isWarpSafe"),
+            ("name", "name"),
+            ("propulsion_chance", "propulsionChance"),
+            ("published", "published"),
+            ("range_chance", "rangeChance"),
+            ("distribution", "distribution"),
+            ("falloff_attribute_id_raw", "falloffAttributeID"),
+            ("range_attribute_id_raw", "rangeAttributeID"),
+            ("tracking_speed_attribute_id_raw", "trackingSpeedAttributeID"),
+            ("icon_id", "iconID"),
+            ("npc_usage_chance_attribute_id_raw", "npcUsageChanceAttributeID"),
+            ("npc_activation_chance_attribute_id_raw", "npcActivationChanceAttributeID"),
+            ("fitting_usage_chance_attribute_id_raw", "fittingUsageChanceAttributeID"),
+            ("resistance_attribute_id_raw", "resistanceAttributeID")
+        )
+        update_fields = False
+        custom_names = False
 
-#     description = models.TextField(null=True, blank=True, default=None)  # _en
-#     display_name = models.CharField(max_length=250, null=True, blank=True, default=None)  # _en
+    description = models.TextField(null=True, blank=True, default=None)  # _en
+    display_name = models.CharField(max_length=250, null=True, blank=True, default=None)  # _en
 
-#     disallow_auto_repeat = models.BooleanField(null=True, blank=True, default=None)
+    name = models.CharField(max_length=250, null=True, blank=True, default=None)
 
-#     discharge_attribute_id_raw = models.IntegerField(null=True, blank=True, default=None)
-#     duration_attribute_id_raw = models.IntegerField(null=True, blank=True, default=None)
-#     effect_category_id_raw = models.IntegerField(null=True, blank=True, default=None)
-#     electronic_chance = models.BooleanField(null=True, blank=True, default=None)
-#     guid = models.CharField(max_length=250, null=True, blank=True, default=None)
-#     is_assistance = models.BooleanField(null=True, blank=True, default=None)
-#     is_offensive = models.BooleanField(null=True, blank=True, default=None)
-#     is_offensive = models.BooleanField(null=True, blank=True, default=None)
-#     is_warp_safe = models.BooleanField(null=True, blank=True, default=None)
-#     propulsion_chance = models.BooleanField(null=True, blank=True, default=None)
-#     published = models.BooleanField(null=True, blank=True, default=None)
-#     range_chance = models.BooleanField(null=True, blank=True, default=None)
-#     distribution = models.IntegerField(null=True, blank=True, default=None)
-#     falloff_attribute_id_raw = models.IntegerField(null=True, blank=True, default=None)
-#     range_attribute_id_raw = models.IntegerField(null=True, blank=True, default=None)
-#     tracking_speed_attribute_id_raw = models.IntegerField(null=True, blank=True, default=None)
-#     icon_id = models.IntegerField(null=True, blank=True, default=None)
-#     npc_usage_chance_attribute_id_raw = models.IntegerField(null=True, blank=True, default=None)
-#     npc_activation_chance_attribute_id_raw = models.IntegerField(null=True, blank=True, default=None)
-#     fitting_usage_chance_attribute_id_raw = models.IntegerField(null=True, blank=True, default=None)
-#     resistance_attribute_id_raw = models.IntegerField(null=True, blank=True, default=None)
+    disallow_auto_repeat = models.BooleanField(null=True, blank=True, default=None)
+
+    discharge_attribute_id_raw = models.IntegerField(null=True, blank=True, default=None)
+    duration_attribute_id_raw = models.IntegerField(null=True, blank=True, default=None)
+    effect_category_id_raw = models.IntegerField(null=True, blank=True, default=None)
+    electronic_chance = models.BooleanField(null=True, blank=True, default=None)
+    guid = models.CharField(max_length=250, null=True, blank=True, default=None)
+    is_assistance = models.BooleanField(null=True, blank=True, default=None)
+    is_offensive = models.BooleanField(null=True, blank=True, default=None)
+    is_warp_safe = models.BooleanField(null=True, blank=True, default=None)
+    propulsion_chance = models.BooleanField(null=True, blank=True, default=None)
+    published = models.BooleanField(null=True, blank=True, default=None)
+    range_chance = models.BooleanField(null=True, blank=True, default=None)
+    distribution = models.IntegerField(null=True, blank=True, default=None)
+    falloff_attribute_id_raw = models.IntegerField(null=True, blank=True, default=None)
+    range_attribute_id_raw = models.IntegerField(null=True, blank=True, default=None)
+    tracking_speed_attribute_id_raw = models.IntegerField(null=True, blank=True, default=None)
+    icon_id = models.IntegerField(null=True, blank=True, default=None)
+    npc_usage_chance_attribute_id_raw = models.IntegerField(null=True, blank=True, default=None)
+    npc_activation_chance_attribute_id_raw = models.IntegerField(null=True, blank=True, default=None)
+    fitting_usage_chance_attribute_id_raw = models.IntegerField(null=True, blank=True, default=None)
+    resistance_attribute_id_raw = models.IntegerField(null=True, blank=True, default=None)
+
+
+class TypeEffect(JSONModel):
+    """
+    typeDogma.jsonl
+        _key : int
+        * dogmaAttributes : list
+            attributeID: int
+            value: float
+        dogmaEffects : list
+            effectID: int
+            isDefault: bool
+    """
+    # JsonL Params
+    class Import:
+        filename = "typeDogma.jsonl"
+        lang_fields = False
+        data_map = (
+            ("item_type_id", "_key"),
+            ("dogma_effect_id", "effectID"),
+        )
+        update_fields = False
+        custom_names = False
+
+    item_type = models.ForeignKey(
+        ItemType,
+        on_delete=models.CASCADE,
+        related_name="effect",
+        null=True,
+        blank=True,
+        default=None
+    )
+
+    dogma_effect = models.ForeignKey(
+        DogmaEffect,
+        on_delete=models.CASCADE,
+        related_name="+",
+        null=True,
+        blank=True,
+        default=None
+    )
+
+    is_default = models.BooleanField(null=True, blank=True, default=False)
+
+    @classmethod
+    def from_jsonl(cls, json_data, name_lookup=False):
+        _out = []
+        _key = {"_key": json_data.get("_key")}
+
+        for ob in json_data.get("dogmaEffects", []):
+            _out.append(cls.map_to_model(ob | _key, name_lookup=name_lookup, pk=False))
+
+        return _out
+
+    @classmethod
+    def load_from_sde(cls, folder_name):
+        gate_qry = cls.objects.all()
+        if gate_qry.exists():
+            # speed and we are not caring about f-keys or signals on these models
+            gate_qry._raw_delete(gate_qry.db)
+        super().load_from_sde(folder_name)
+
+    class Meta:
+        default_permissions = ()
+
+    def __str__(self):
+        return f"{self.item_type} ({self.dogma_effect_id}: {self.dogma_effect.name})"
 
 
 class TypeDogma(JSONModel):
@@ -451,7 +525,7 @@ class TypeDogma(JSONModel):
         dogmaAttributes : list
             attributeID: int
             value: float
-        dogmaEffects : list
+        * dogmaEffects : list
             effectID: int
             isDefault: bool
     """

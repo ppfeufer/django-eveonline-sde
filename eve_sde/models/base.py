@@ -1,16 +1,18 @@
 # Standard Library
 import json
-import logging
 from datetime import datetime, timezone
 
 # Django
 from django.db import models
 from django.utils.translation import gettext as _
 
+# Alliance Auth
+from allianceauth.services.hooks import get_extension_logger
+
 from .admin import EveSDESection
 from .utils import get_langs, get_langs_for_field, lang_key, val_from_dict
 
-logger = logging.getLogger(__name__)
+logger = get_extension_logger(__name__)
 
 
 class JSONModel(models.Model):

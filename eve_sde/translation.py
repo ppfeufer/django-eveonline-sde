@@ -2,7 +2,14 @@
 from modeltranslation.translator import TranslationOptions, translator
 
 from .models.map import Constellation, Moon, Planet, Region, SolarSystem
-from .models.types import DogmaAttribute, DogmaUnit, ItemCategory, ItemGroup, ItemType
+from .models.types import (
+    DogmaAttribute,
+    DogmaEffect,
+    DogmaUnit,
+    ItemCategory,
+    ItemGroup,
+    ItemType,
+)
 
 
 class NameAndDescriptionTranslationOptions(TranslationOptions):
@@ -37,3 +44,10 @@ class DogmaAttributeTranslationOptions(TranslationOptions):
 
 
 translator.register(DogmaAttribute, DogmaAttributeTranslationOptions)
+
+
+class DogmaEffectTranslationOptions(TranslationOptions):
+    fields = ("display_name", "description")
+
+
+translator.register(DogmaEffect, DogmaEffectTranslationOptions)
