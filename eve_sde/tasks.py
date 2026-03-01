@@ -1,8 +1,5 @@
 """App Tasks"""
 
-# Standard Library
-import logging
-
 # Third Party
 from celery import chain, shared_task
 
@@ -10,6 +7,7 @@ from celery import chain, shared_task
 from django.utils import timezone
 
 # Alliance Auth
+from allianceauth.services.hooks import get_extension_logger
 from allianceauth.services.tasks import QueueOnce
 
 # AA Example App
@@ -23,7 +21,7 @@ from eve_sde.sde_tasks import (
     set_sde_version,
 )
 
-logger = logging.getLogger(__name__)
+logger = get_extension_logger(__name__)
 
 # What models and the order to load them
 

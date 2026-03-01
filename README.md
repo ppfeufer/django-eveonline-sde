@@ -24,6 +24,7 @@ See `eve_sde/sde_types.txt` for an idea of the top level fields that are availab
 - Dogma Categories
 - Dogma Units
 - Dogma Attributes
+- Dogma Effects
 
 ## Setup
 
@@ -45,7 +46,7 @@ See `eve_sde/sde_types.txt` for an idea of the top level fields that are availab
 
 - `python manage.py esde_load_sde`
 
-- Add a periodic task to check for SDE updates, which tend to happend after downtime.
+- Add a periodic task to check for SDE updates, which tend to happen after downtime.
 
   ```python
   if "eve_sde" in INSTALLED_APPS:
@@ -55,6 +56,12 @@ See `eve_sde/sde_types.txt` for an idea of the top level fields that are availab
           "schedule": crontab(minute="0", hour="12"),
       }
   ```
+
+## Contributors
+
+Thankyou to all our [contributors](https://github.com/Solar-Helix-Independent-Transport/django-eveonline-sde/graphs/contributors)!
+
+![contributors](https://contrib.rocks/image?repo=Solar-Helix-Independent-Transport/django-eveonline-sde)
 
 ## Credits
 
