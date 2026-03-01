@@ -1,4 +1,6 @@
-# Django Models from EVE SDE [![PyPI - Version](https://img.shields.io/pypi/v/django-eveonline-sde?style=for-the-badge)](https://pypi.org/project/django-eveonline-sde/)
+# Django Models from EVE SDE
+
+[![PyPI](https://img.shields.io/pypi/v/django-eveonline-sde?style=for-the-badge)](https://pypi.org/project/django-eveonline-sde/) [![Discord](https://img.shields.io/discord/399006117012832262?style=for-the-badge&label=Support%20Server)](https://discord.com/invite/fjnHAmk)
 
 Base models from SDE, with an experiment in in-database translations pulled from the SDE and minor helpers for common functions.
 
