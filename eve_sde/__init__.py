@@ -1,5 +1,5 @@
 """Django EvE SDE Models"""
 
-__version__ = "0.0.1b2"
+__version__ = "0.0.1b3"
 __title__ = "DjangoEvEOnlineSDE"
 __url__ = "https://github.com/Solar-Helix-Independent-Transport/django-eveonline-sde"
