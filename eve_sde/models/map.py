@@ -283,6 +283,77 @@ class Stargate(UniverseBase):
         super().load_from_sde(folder_name)
 
 
+class NPCStation(UniverseBase):
+    """
+    npcStations.jsonl
+        _key : int
+        celestialIndex : int
+        operationID : int
+        orbitID : int
+        orbitIndex : int
+        ownerID : int
+        position : dict
+            position.x : float
+            position.y : float
+            position.z : float
+        reprocessingEfficiency : float
+        reprocessingHangarFlag : int
+        reprocessingStationsTake : float
+        solarSystemID : int
+        typeID : int
+        useOperationName : bool
+    """
+    # JsonL Params
+    class Import:
+        filename = "npcStations.jsonl"
+        lang_fields = ["name"]
+        data_map = (
+            ("celestial_index", "celestialIndex"),
+            ("operation_id_raw", "operationID"),
+            ("orbit_id_raw", "orbitID"),
+            ("orbit_index", "orbitIndex"),
+            ("owner_id_raw", "ownerID"),
+            ("x", "position.x"),
+            ("y", "position.y"),
+            ("z", "position.z"),
+            ("reprocessing_efficiency", "reprocessingEfficiency"),
+            ("reprocessing_hangar_flag", "reprocessingHangarFlag"),
+            ("reprocessing_stations_take", "reprocessingStationsTake"),
+            ("solar_system_id", "solarSystemID"),
+            ("item_type_id", "typeID"),
+            ("use_operation_name", "useOperationName"),
+        )
+        update_fields = False
+        custom_names = False
+
+    # Model Fields
+    celestial_index = models.IntegerField(null=True, blank=True, default=None)
+    operation_id_raw = models.IntegerField(null=True, blank=True, default=None)
+    orbit_id_raw = models.IntegerField(null=True, blank=True, default=None)
+    orbit_index = models.IntegerField(null=True, blank=True, default=None)
+    owner_id_raw = models.IntegerField(null=True, blank=True, default=None)
+    reprocessing_efficiency = models.FloatField(null=True, blank=True, default=None)
+    reprocessing_hangar_flag = models.IntegerField(null=True, blank=True, default=None)
+    reprocessing_stations_take = models.FloatField(null=True, blank=True, default=None)
+    solar_system = models.ForeignKey(
+        SolarSystem,
+        on_delete=models.CASCADE,
+        related_name="+",
+        null=True,
+        blank=True,
+        default=None
+    )
+    item_type = models.ForeignKey(
+        ItemType,
+        on_delete=models.CASCADE,
+        related_name="+",
+        null=True,
+        blank=True,
+        default=None
+    )
+    use_operation_name = models.BooleanField(null=True, blank=True, default=None)
+
+
 class Planet(UniverseBase):
     """
     mapPlanets.jsonl

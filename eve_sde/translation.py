@@ -1,13 +1,14 @@
 # Third Party
 from modeltranslation.translator import TranslationOptions, translator
 
-from .models.map import Constellation, Moon, Planet, Region, SolarSystem
+from .models.map import Constellation, Moon, NPCStation, Planet, Region, SolarSystem
 from .models.types import (
     DogmaAttribute,
     DogmaEffect,
     DogmaUnit,
     ItemCategory,
     ItemGroup,
+    ItemMarketGroup,
     ItemType,
 )
 
@@ -17,6 +18,7 @@ class NameAndDescriptionTranslationOptions(TranslationOptions):
 
 
 translator.register(Region, NameAndDescriptionTranslationOptions)
+translator.register(ItemMarketGroup, NameAndDescriptionTranslationOptions)
 translator.register(ItemType, NameAndDescriptionTranslationOptions)
 
 
@@ -26,6 +28,7 @@ class NameTranslationOptions(TranslationOptions):
 
 translator.register(Constellation, NameTranslationOptions)
 translator.register(SolarSystem, NameTranslationOptions)
+translator.register(NPCStation, NameTranslationOptions)
 translator.register(Planet, NameTranslationOptions)
 translator.register(Moon, NameTranslationOptions)
 translator.register(ItemCategory, NameTranslationOptions)

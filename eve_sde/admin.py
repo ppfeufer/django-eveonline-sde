@@ -5,11 +5,6 @@ from django.contrib import admin
 
 from . import models
 
-# Register your models here.
-# admin.site.register(models.ItemCategory)
-# admin.site.register(models.ItemGroup)
-# admin.site.register(models.ItemType)
-
 
 class NoEdit(admin.ModelAdmin):
     def has_change_permission(self, request, obj=None):
@@ -111,3 +106,9 @@ class PlanetAdmin(NoEdit):
             'solar_system__constellation',
             'solar_system'
         )
+
+
+@admin.register(models.ItemType)
+class ItemTypeAdmin(NoEdit):
+    list_display = ('name', )
+    search_fields = ('name', )

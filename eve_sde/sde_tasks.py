@@ -11,10 +11,16 @@ import httpx
 # Alliance Auth
 from allianceauth.services.hooks import get_extension_logger
 
-# AA Example App
-from eve_sde.models import EveSDE
-
-from .models.map import Constellation, Moon, Planet, Region, SolarSystem, Stargate
+from .models import EveSDE
+from .models.map import (
+    Constellation,
+    Moon,
+    NPCStation,
+    Planet,
+    Region,
+    SolarSystem,
+    Stargate,
+)
 from .models.types import (
     DogmaAttribute,
     DogmaAttributeCategory,
@@ -22,6 +28,7 @@ from .models.types import (
     DogmaUnit,
     ItemCategory,
     ItemGroup,
+    ItemMarketGroup,
     ItemType,
     ItemTypeMaterials,
     TypeDogma,
@@ -35,7 +42,8 @@ SDE_PARTS_TO_UPDATE = [
     # Types
     ItemCategory,
     ItemGroup,
-    ItemType,
+    ItemMarketGroup,
+    ItemType,  # Requires: ItemGroup and ItemMarketGroup
     ItemTypeMaterials,
     DogmaUnit,
     DogmaAttributeCategory,
@@ -47,7 +55,8 @@ SDE_PARTS_TO_UPDATE = [
     Region,
     Constellation,
     SolarSystem,
-    # System stuffs
+    #  System stuffs
+    NPCStation,  # Requires: SolarSystem, ItemType
     Stargate,
     Planet,
     Moon,
@@ -160,4 +169,5 @@ def set_sde_version():
     _o.release_date = release
     _o.last_check_date = datetime.now(tz=timezone.utc)
     _o.save()
+    logger.info(f"SDE Updated to Build:{build} from:{release}")
     logger.info(f"SDE Updated to Build:{build} from:{release}")

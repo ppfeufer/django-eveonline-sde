@@ -3,7 +3,7 @@
 # Django
 from django.apps import AppConfig
 
-# AA Example App
+# Django EVE SDE
 from eve_sde import __version__
 
 
