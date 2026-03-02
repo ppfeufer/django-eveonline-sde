@@ -54,5 +54,3 @@ class DogmaEffectTranslationOptions(TranslationOptions):
 
 
 translator.register(DogmaEffect, DogmaEffectTranslationOptions)
-
-translator.register(DogmaEffect, DogmaEffectTranslationOptions)
