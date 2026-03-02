@@ -10,7 +10,7 @@ from django.utils import timezone
 from allianceauth.services.hooks import get_extension_logger
 from allianceauth.services.tasks import QueueOnce
 
-# AA Example App
+# Django EVE SDE
 from eve_sde.models import EveSDE
 from eve_sde.sde_tasks import (
     SDE_PARTS_TO_UPDATE,

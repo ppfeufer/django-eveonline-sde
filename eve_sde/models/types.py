@@ -135,7 +135,8 @@ class ItemMarketGroup(TypeBase):
     description = models.TextField(null=True, blank=True, default=None)  # _en
     has_types = models.BooleanField(default=False)
     icon_id = models.IntegerField(null=True, blank=True, default=None)
-    parent_group = models.ForeignKey("self", on_delete=models.CASCADE, null=True, blank=True)  # I dont like this name, but thats what it is in the SDE
+    # I dont like this name, but thats what it is in the SDE
+    parent_group = models.ForeignKey("self", on_delete=models.CASCADE, null=True, blank=True)
 
     @classmethod
     def load_from_sde(cls, folder_name) -> None:

@@ -16,6 +16,7 @@ class NoEdit(admin.ModelAdmin):
     def has_delete_permission(self, request, obj=None):
         return False
 
+
 @admin.register(models.SolarSystem)
 class SolarSystemAdmin(NoEdit):
     list_display = ['name', 'get_region', 'get_constellation']
