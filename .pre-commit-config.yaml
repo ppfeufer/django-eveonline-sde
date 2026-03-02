@@ -6,7 +6,6 @@
 # Set the default language versions for the hooks
 default_language_version:
   python: python3  # Force all Python hooks to use Python 3
-  node: 22.13.1  # Force all Node hooks to use the latest Node LTS
 
 # https://pre-commit.ci/
 ci:
@@ -18,8 +17,7 @@ ci:
   autoupdate_branch: ''
   autoupdate_commit_msg: '[pre-commit.ci] pre-commit autoupdate'
   autoupdate_schedule: monthly
-  skip:
-    - eslint  # Fails due to missing node environment in CI
+  skip: []
   submodules: false
 
 # Globally exclude files
