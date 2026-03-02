@@ -32,7 +32,7 @@ logger = get_extension_logger(__name__)
 
 # What models and the order to load them
 SDE_PARTS_TO_UPDATE = [
-    # # Types
+    # Types
     ItemCategory,
     ItemGroup,
     ItemType,
@@ -43,11 +43,11 @@ SDE_PARTS_TO_UPDATE = [
     DogmaEffect,
     TypeDogma,
     TypeEffect,
-    # # Map
+    # Map
     Region,
     Constellation,
     SolarSystem,
-    # # # System stuffs
+    # System stuffs
     Stargate,
     Planet,
     Moon,

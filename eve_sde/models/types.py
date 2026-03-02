@@ -140,9 +140,13 @@ class ItemType(TypeBase):
             ("sound_id", "soundID"),
             ("variation_parent_type_id", "variationParentTypeID"),
             ("volume", "volume"),
+            ("packaged_volume", "packaged_volume"),  # from extras
         )
         update_fields = False
         custom_names = False
+        extra_data = (
+            ("https://sde.hoboleaks.space/tq/repackagedvolumes.json", "id_dict", ("packaged_volume",)),
+        )
 
     # Model Fields
     base_price = models.FloatField(null=True, blank=True, default=None)
@@ -162,6 +166,7 @@ class ItemType(TypeBase):
     sound_id = models.IntegerField(null=True, blank=True, default=None)
     variation_parent_type_id = models.IntegerField(null=True, blank=True, default=None)
     volume = models.FloatField(null=True, blank=True, default=None)
+    packaged_volume = models.FloatField(null=True, blank=True, default=None)
 
 
 class ItemTypeMaterials(JSONModel):
