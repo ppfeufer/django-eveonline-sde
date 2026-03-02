@@ -162,9 +162,9 @@ class JSONModel(models.Model):
                     if pks:
                         for _i in _new:
                             if _i.pk in pks:
-                                _updates.append(_new)
+                                _updates.append(_i)
                             else:
-                                _creates.append(_new)
+                                _creates.append(_i)
                             total_read += 1
                     else:
                         _creates += _new

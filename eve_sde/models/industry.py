@@ -9,16 +9,13 @@ from .types import ItemType
 
 
 class BlueprintActivity(JSONModel):
-    """Industry activity labels used for blueprint activities."""
     """
     blueprints.jsonl
         _key : int
         activities : dict
             <activity_name> : dict
-                products : list
-                    typeID : int
-                    quantity : int
-                    probability : float
+        blueprintTypeID : int
+        maxProductionLimit : int
     """
     class Activities(models.TextChoices):
         manufacturing = "manufacturing", _("Manufacturing")
@@ -32,16 +29,16 @@ class BlueprintActivity(JSONModel):
         filename = "blueprints.jsonl"
         lang_fields = False
         data_map = (
-            ("id", "id"),  # built manually
             ("activity", "activity"),
             ("time", "time"),
-            ("blueprint_item_type", "blueprintTypeID"),
+            ("blueprint_item_type_id", "blueprintTypeID"),
             ("max_production_limit", "maxProductionLimit"),
         )
-        update_fields = False
+        update_fields = ["time", "max_production_limit"]
         custom_names = False
 
-    def build_pk(cls, bp_id: int, activity: str):
+    @staticmethod
+    def build_pk(bp_id: int, activity: str):
         return f"{bp_id}:{activity}"
 
     # PK
@@ -74,9 +71,9 @@ class BlueprintActivity(JSONModel):
             _base = {
                 "activity": activity_name,
                 "time": activity_data.get("time"),
-                "id": cls.build_pk(json_data.get("_key"), activity_name),
+                "_key": cls.build_pk(json_data.get("_key"), activity_name),
             }
-            _out.append(cls.map_to_model(json_data | _base, pk=False))
+            _out.append(cls.map_to_model(json_data | _base))
 
         return _out
 
@@ -169,7 +166,7 @@ class BlueprintActivityMaterial(JSONModel):
         lang_fields = False
         data_map = (
             ("blueprint_activity_id", "blueprint_activity_id"),
-            ("material_item_type_id", "typeID"),
+            ("item_type_id", "typeID"),
             ("quantity", "quantity"),
         )
         update_fields = False
@@ -177,7 +174,7 @@ class BlueprintActivityMaterial(JSONModel):
 
     blueprint_activity = models.ForeignKey(
         BlueprintActivity,
-        related_name="products",
+        related_name="materials",
         on_delete=models.CASCADE
     )
 
@@ -200,8 +197,10 @@ class BlueprintActivityMaterial(JSONModel):
                 _activity = {
                     "blueprint_activity_id": BlueprintActivity.build_pk(json_data.get("_key"), activity_name),
                 }
-                for product in activity_data.get("materials", []):
-                    _out.append(cls.map_to_model(product | _activity, pk=False))
+                for material in activity_data.get("materials", []):
+                    if material.get("typeID") not in cls.pks:
+                        material["typeID"] = None
+                    _out.append(cls.map_to_model(material | _activity, pk=False))
 
         return _out
 
@@ -210,10 +209,17 @@ class BlueprintActivityMaterial(JSONModel):
         gate_qry = cls.objects.all()
         if gate_qry.exists():
             gate_qry._raw_delete(gate_qry.db)
+
+        # there is a bad typeID in the materials list.
+        # we will just ignore them
+        # 3927 - Clones  (met: 3924)
+        cls.pks = set(
+            ItemType.objects.all().values_list("pk", flat=True)
+        )
         super().load_from_sde(folder_name)
 
     def __str__(self):
         return (
-            f"{self.blueprint_activity.blueprint_item_type.name} <- {self.item_type.name} "
+            f"{self.blueprint_activity.blueprint_item_type.name} <- {self.item_type.name if self.item_type else 'Unknown Type'} "
             f"(qty={self.quantity})"
         )

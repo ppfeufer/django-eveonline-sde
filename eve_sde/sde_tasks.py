@@ -12,6 +12,11 @@ import httpx
 from allianceauth.services.hooks import get_extension_logger
 
 from .models import EveSDE
+from .models.industry import (
+    BlueprintActivity,
+    BlueprintActivityMaterial,
+    BlueprintActivityProduct,
+)
 from .models.map import (
     Constellation,
     Moon,
@@ -45,6 +50,9 @@ SDE_PARTS_TO_UPDATE = [
     ItemMarketGroup,
     ItemType,  # Requires: ItemGroup and ItemMarketGroup
     ItemTypeMaterials,
+    BlueprintActivity,
+    BlueprintActivityProduct,
+    BlueprintActivityMaterial,
     DogmaUnit,
     DogmaAttributeCategory,
     DogmaAttribute,
