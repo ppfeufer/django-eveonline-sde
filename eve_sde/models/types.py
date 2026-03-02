@@ -193,7 +193,7 @@ class ItemType(TypeBase):
             ("graphic_id", "graphicID"),
             ("group_id", "groupID"),
             ("icon_id", "iconID"),
-            ("market_group_id_raw", "marketGroupID"),
+            ("market_group_id", "marketGroupID"),
             ("mass", "mass"),
             ("meta_group_id_raw", "metaGroupID"),
             ("name", "name.en"),
@@ -220,7 +220,6 @@ class ItemType(TypeBase):
     graphic_id = models.IntegerField(null=True, blank=True, default=None)
     group = models.ForeignKey(ItemGroup, on_delete=models.SET_NULL, null=True, blank=True, default=None)
     icon_id = models.IntegerField(null=True, blank=True, default=None)
-    market_group_id_raw = models.IntegerField(null=True, blank=True, default=None)  # Deprecate?
     market_group = models.ForeignKey(ItemMarketGroup, on_delete=models.SET_NULL, null=True, blank=True, default=None)
     mass = models.FloatField(null=True, blank=True, default=None)
     meta_group_id_raw = models.IntegerField(null=True, blank=True, default=None)
@@ -232,6 +231,9 @@ class ItemType(TypeBase):
     variation_parent_type_id = models.IntegerField(null=True, blank=True, default=None)
     volume = models.FloatField(null=True, blank=True, default=None)
     packaged_volume = models.FloatField(null=True, blank=True, default=None)
+
+    def market_group_id_raw(self) -> int | None:
+        return self.market_group.id if self.market_group else None
 
 
 class ItemTypeMaterials(JSONModel):
