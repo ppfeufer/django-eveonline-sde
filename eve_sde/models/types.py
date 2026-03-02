@@ -91,6 +91,70 @@ class ItemGroup(TypeBase):
     use_base_price = models.BooleanField(default=False)
 
 
+class ItemMarketGroup(TypeBase):
+    """
+    marketGroups.jsonl
+        _key : int
+        description : dict
+            description.de : str
+            description.en : str
+            description.es : str
+            description.fr : str
+            description.ja : str
+            description.ko : str
+            description.ru : str
+            description.zh : str
+        hasTypes : bool
+        iconID : int
+        name : dict
+            name.de : str
+            name.en : str
+            name.es : str
+            name.fr : str
+            name.ja : str
+            name.ko : str
+            name.ru : str
+            name.zh : str
+        parentGroupID : int
+    """
+    # JsonL Params
+    class Import:
+        filename = "marketGroups.jsonl"
+        lang_fields = ["name", "description"]
+        data_map = (
+            ("description", "description.en"),
+            ("has_types", "hasTypes"),
+            ("icon_id", "iconID"),
+            ("name", "name.en"),
+            ("parent_group_id", "parentGroupID"),
+        )
+        update_fields = False
+        custom_names = False
+
+    # Model Fields
+    description = models.TextField(null=True, blank=True, default=None)  # _en
+    has_types = models.BooleanField(default=False)
+    icon_id = models.IntegerField(null=True, blank=True, default=None)
+    parent_group = models.ForeignKey("self", on_delete=models.CASCADE, null=True, blank=True)  # I dont like this name, but thats what it is in the SDE
+
+    @classmethod
+    def load_from_sde(cls, folder_name) -> None:
+        original_data_map = cls.Import.data_map
+        first_pass_data_map = tuple(
+            (field_name, field_key)
+            for field_name, field_key in original_data_map
+            if field_name != "parent_group_id"
+        )
+
+        try:
+            setattr(cls.Import, "data_map", first_pass_data_map)
+            super().load_from_sde(folder_name)
+        finally:
+            setattr(cls.Import, "data_map", original_data_map)
+
+        super().load_from_sde(folder_name)
+
+
 class ItemType(TypeBase):
     """
     types.jsonl
@@ -152,7 +216,8 @@ class ItemType(TypeBase):
     graphic_id = models.IntegerField(null=True, blank=True, default=None)
     group = models.ForeignKey(ItemGroup, on_delete=models.SET_NULL, null=True, blank=True, default=None)
     icon_id = models.IntegerField(null=True, blank=True, default=None)
-    market_group_id_raw = models.IntegerField(null=True, blank=True, default=None)
+    market_group_id_raw = models.IntegerField(null=True, blank=True, default=None)  # Deprecate?
+    market_group = models.ForeignKey(ItemMarketGroup, on_delete=models.SET_NULL, null=True, blank=True, default=None)
     mass = models.FloatField(null=True, blank=True, default=None)
     meta_group_id_raw = models.IntegerField(null=True, blank=True, default=None)
     portion_size = models.IntegerField(null=True, blank=True, default=None)

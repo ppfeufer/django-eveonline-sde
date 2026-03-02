@@ -10,16 +10,26 @@ from datetime import datetime, timezone
 # Third Party
 import httpx
 
+# Django EVE SDE
 # AA Example App
 from eve_sde.models import EveSDE
 
-from .models.map import Constellation, Moon, Planet, Region, SolarSystem, Stargate
+from .models.map import (
+    Constellation,
+    Moon,
+    NPCStation,
+    Planet,
+    Region,
+    SolarSystem,
+    Stargate,
+)
 from .models.types import (
     DogmaAttribute,
     DogmaAttributeCategory,
     DogmaUnit,
     ItemCategory,
     ItemGroup,
+    ItemMarketGroup,
     ItemType,
     ItemTypeMaterials,
     TypeDogma,
@@ -32,6 +42,7 @@ SDE_PARTS_TO_UPDATE = [
     # # Types
     ItemCategory,
     ItemGroup,
+    ItemMarketGroup,
     ItemType,
     ItemTypeMaterials,
     DogmaUnit,
@@ -43,6 +54,7 @@ SDE_PARTS_TO_UPDATE = [
     Constellation,
     SolarSystem,
     # # System stuffs
+    NPCStation,  # Requires: SolarSystem, ItemType
     Stargate,
     Planet,
     Moon,

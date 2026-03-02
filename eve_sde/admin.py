@@ -1,6 +1,13 @@
 """Admin models"""
 
 # Django
-from django.contrib import admin  # noqa: F401
+from django.contrib import admin
 
-# Register your models here.
+# Django EVE SDE
+from eve_sde.models.types import ItemType
+
+
+@admin.register(ItemType)
+class ItemTypeAdmin(admin.ModelAdmin):
+    list_display = ('name', )
+    search_fields = ('name', )
