@@ -6,11 +6,9 @@ This documentation explains how to export data in your application for running y
 
 ## Setup
 
-In your Django application test folder you will create a python module called `testdata`.
+In your Django application you will create a python module called `fixtures`.
 
-This will lead to a structure as follows: `<YOUR-APPLICATION>.tests.testdata`.
-
-In the testdata module you will need to create an `__init__.py` file:
+In the fixtures module you will need to create an `__init__.py` file:
 
 ```py
 from eve_sde.test_data import ModelSpec
@@ -40,7 +38,7 @@ Having a variable `testdata_spec` containing a list of `eve_sde.testdata.ModelSp
 The management command `esde_generate_test_data` will handle all the generation.
 You can easily run it using `python manage.py esde_generate_test_data <YOUR-APP-LABEL>`.
 
-Once the command finish running you should fine a new file in your testdata folder called `sde.json`.
+Once the command finish running you should fine a new file in your fixtures folder called `<YOUR-APP-LABEL>_sde.json`.
 
 ## Loading data
 
@@ -48,5 +46,5 @@ To load this data in your django tests you need to add a `fixtures` attribute to
 
 ```python
 class MyTestCase(TestCase):
-    fixtures = ["testdata/sde.json"]
+    fixtures = ["<YOUR-APP-LABEL>_sde"]
 ```

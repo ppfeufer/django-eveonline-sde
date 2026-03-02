@@ -33,7 +33,7 @@ class Command(BaseCommand):
             raise AssertionError(
                 f"Path {application_config.path} doesn't appear to be editable. Run the command with force_editable=True if you are sure it's an editable path.")
 
-        module = importlib.import_module(f"{application_label}.tests.testdata")
+        module = importlib.import_module(f"{application_label}.fixtures")
 
         # raises if testdata_spec is not defined
         module.testdata_spec
@@ -52,5 +52,5 @@ class Command(BaseCommand):
 
         formatted_json = json.dumps(json.loads(dumped_data), indent=4)
 
-        with open(f"{path}/sde.json", "w") as f:
+        with open(f"{path}/{application_label}_sde.json", "w") as f:
             f.write(formatted_json)
