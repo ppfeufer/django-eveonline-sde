@@ -242,6 +242,7 @@ class ItemType(TypeBase):
     volume = models.FloatField(null=True, blank=True, default=None)
     packaged_volume = models.FloatField(null=True, blank=True, default=None)
 
+    @property
     def market_group_id_raw(self) -> int | None:
         return self.market_group.id if self.market_group else None
 
