@@ -81,7 +81,7 @@ class Migration(migrations.Migration):
                 ('description_zh_hans', models.TextField(blank=True, default=None, null=True)),
                 ('has_types', models.BooleanField(default=False)),
                 ('icon_id', models.IntegerField(blank=True, default=None, null=True)),
-                ('parent_group', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='eve_sde.itemmarketgroup')),
+                ('parent_group', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name="children", to='eve_sde.itemmarketgroup')),
             ],
             options={
                 'abstract': False,

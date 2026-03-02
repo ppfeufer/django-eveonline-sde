@@ -43,7 +43,7 @@ SDE_PARTS_TO_UPDATE = [
     ItemCategory,
     ItemGroup,
     ItemMarketGroup,
-    ItemType,
+    ItemType,  # Requires: ItemGroup and ItemMarketGroup
     ItemTypeMaterials,
     DogmaUnit,
     DogmaAttributeCategory,

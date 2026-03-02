@@ -135,11 +135,19 @@ class ItemMarketGroup(TypeBase):
     description = models.TextField(null=True, blank=True, default=None)  # _en
     has_types = models.BooleanField(default=False)
     icon_id = models.IntegerField(null=True, blank=True, default=None)
-    # I dont like this name, but thats what it is in the SDE
-    parent_group = models.ForeignKey("self", on_delete=models.CASCADE, null=True, blank=True)
+
+    parent_group = models.ForeignKey(
+        "self",
+        related_name="children",
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True
+    )
 
     @classmethod
     def load_from_sde(cls, folder_name) -> None:
+        # This is slower than a single pass but works.
+        # Parent group is a self ref so we need to do a full load first
         original_data_map = cls.Import.data_map
         first_pass_data_map = tuple(
             (field_name, field_key)
@@ -149,10 +157,11 @@ class ItemMarketGroup(TypeBase):
 
         try:
             setattr(cls.Import, "data_map", first_pass_data_map)
+            # First pass without parent_group_id to avoid fkey issues
             super().load_from_sde(folder_name)
         finally:
             setattr(cls.Import, "data_map", original_data_map)
-
+        # Second pass to update parent_group_id
         super().load_from_sde(folder_name)
 
 
