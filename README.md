@@ -1,4 +1,6 @@
-# Django Models from EVE SDE [![PyPI - Version](https://img.shields.io/pypi/v/django-eveonline-sde?style=for-the-badge)](https://pypi.org/project/django-eveonline-sde/)
+# Django Models from EVE SDE
+
+[![PyPI](https://img.shields.io/pypi/v/django-eveonline-sde?style=for-the-badge)](https://pypi.org/project/django-eveonline-sde/) [![Discord](https://img.shields.io/discord/399006117012832262?style=for-the-badge&label=Support%20Server)](https://discord.com/invite/fjnHAmk)
 
 Base models from SDE, with an experiment in in-database translations pulled from the SDE and minor helpers for common functions.
 
@@ -24,10 +26,11 @@ See `eve_sde/sde_types.txt` for an idea of the top level fields that are availab
 - Dogma Categories
 - Dogma Units
 - Dogma Attributes
+- Dogma Effects
 
 ## Setup
 
-- `pip install `
+- `pip install django-eveonline-sde`
 
 - modify your `local.py` as `modeltranslation` needs to be first in the list.
 
@@ -45,7 +48,7 @@ See `eve_sde/sde_types.txt` for an idea of the top level fields that are availab
 
 - `python manage.py esde_load_sde`
 
-- Add a periodic task to check for SDE updates, which tend to happend after downtime.
+- Add a periodic task to check for SDE updates, which tend to happen after downtime.
 
   ```python
   if "eve_sde" in INSTALLED_APPS:
@@ -55,6 +58,12 @@ See `eve_sde/sde_types.txt` for an idea of the top level fields that are availab
           "schedule": crontab(minute="0", hour="12"),
       }
   ```
+
+## Contributors
+
+Thankyou to all our [contributors](https://github.com/Solar-Helix-Independent-Transport/django-eveonline-sde/graphs/contributors)!
+
+![contributors](https://contrib.rocks/image?repo=Solar-Helix-Independent-Transport/django-eveonline-sde)
 
 ## Credits
 

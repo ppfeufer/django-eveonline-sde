@@ -1,7 +1,5 @@
 # Standard Library
-import glob
 import json
-import logging
 import os
 import shutil
 import zipfile
@@ -10,10 +8,10 @@ from datetime import datetime, timezone
 # Third Party
 import httpx
 
-# Django EVE SDE
-# AA Example App
-from eve_sde.models import EveSDE
+# Alliance Auth
+from allianceauth.services.hooks import get_extension_logger
 
+from .models import EveSDE
 from .models.map import (
     Constellation,
     Moon,
@@ -26,6 +24,7 @@ from .models.map import (
 from .models.types import (
     DogmaAttribute,
     DogmaAttributeCategory,
+    DogmaEffect,
     DogmaUnit,
     ItemCategory,
     ItemGroup,
@@ -33,13 +32,14 @@ from .models.types import (
     ItemType,
     ItemTypeMaterials,
     TypeDogma,
+    TypeEffect,
 )
 
-logger = logging.getLogger(__name__)
+logger = get_extension_logger(__name__)
 
 # What models and the order to load them
 SDE_PARTS_TO_UPDATE = [
-    # # Types
+    # Types
     ItemCategory,
     ItemGroup,
     ItemMarketGroup,
@@ -48,19 +48,18 @@ SDE_PARTS_TO_UPDATE = [
     DogmaUnit,
     DogmaAttributeCategory,
     DogmaAttribute,
+    DogmaEffect,
     TypeDogma,
-    # # Map
+    TypeEffect,
+    # Map
     Region,
     Constellation,
     SolarSystem,
-    # # System stuffs
+    #  System stuffs
     NPCStation,  # Requires: SolarSystem, ItemType
     Stargate,
     Planet,
     Moon,
-    # EveItemDogmaAttribute,
-    # # Type Materials
-    # InvTypeMaterials,
 ]
 
 SDE_URL = "https://developers.eveonline.com/static-data/eve-online-static-data-latest-jsonl.zip"
@@ -168,5 +167,7 @@ def set_sde_version():
     _o = EveSDE.get_solo()
     _o.build_number = build
     _o.release_date = release
+    _o.last_check_date = datetime.now(tz=timezone.utc)
     _o.save()
+    logger.info(f"SDE Updated to Build:{build} from:{release}")
     logger.info(f"SDE Updated to Build:{build} from:{release}")
