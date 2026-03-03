@@ -18,6 +18,7 @@ See `eve_sde/sde_types.txt` for an idea of the top level fields that are availab
 - SolarSystem
 - Planet
 - Moon
+- NPC Station
 - Stargate
 - Item Market Groups
 - Item Groups
