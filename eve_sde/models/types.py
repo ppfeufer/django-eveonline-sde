@@ -91,6 +91,80 @@ class ItemGroup(TypeBase):
     use_base_price = models.BooleanField(default=False)
 
 
+class ItemMarketGroup(TypeBase):
+    """
+    marketGroups.jsonl
+        _key : int
+        description : dict
+            description.de : str
+            description.en : str
+            description.es : str
+            description.fr : str
+            description.ja : str
+            description.ko : str
+            description.ru : str
+            description.zh : str
+        hasTypes : bool
+        iconID : int
+        name : dict
+            name.de : str
+            name.en : str
+            name.es : str
+            name.fr : str
+            name.ja : str
+            name.ko : str
+            name.ru : str
+            name.zh : str
+        parentGroupID : int
+    """
+    # JsonL Params
+    class Import:
+        filename = "marketGroups.jsonl"
+        lang_fields = ["name", "description"]
+        data_map = (
+            ("description", "description.en"),
+            ("has_types", "hasTypes"),
+            ("icon_id", "iconID"),
+            ("name", "name.en"),
+            ("parent_group_id", "parentGroupID"),
+        )
+        update_fields = False
+        custom_names = False
+
+    # Model Fields
+    description = models.TextField(null=True, blank=True, default=None)  # _en
+    has_types = models.BooleanField(default=False)
+    icon_id = models.IntegerField(null=True, blank=True, default=None)
+
+    parent_group = models.ForeignKey(
+        "self",
+        related_name="children",
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True
+    )
+
+    @classmethod
+    def load_from_sde(cls, folder_name) -> None:
+        # This is slower than a single pass but works.
+        # Parent group is a self ref so we need to do a full load first
+        original_data_map = cls.Import.data_map
+        first_pass_data_map = tuple(
+            (field_name, field_key)
+            for field_name, field_key in original_data_map
+            if field_name != "parent_group_id"
+        )
+
+        try:
+            setattr(cls.Import, "data_map", first_pass_data_map)
+            # First pass without parent_group_id to avoid fkey issues
+            super().load_from_sde(folder_name)
+        finally:
+            setattr(cls.Import, "data_map", original_data_map)
+        # Second pass to update parent_group_id
+        super().load_from_sde(folder_name)
+
+
 class ItemType(TypeBase):
     """
     types.jsonl
@@ -129,7 +203,7 @@ class ItemType(TypeBase):
             ("graphic_id", "graphicID"),
             ("group_id", "groupID"),
             ("icon_id", "iconID"),
-            ("market_group_id_raw", "marketGroupID"),
+            ("market_group_id", "marketGroupID"),
             ("mass", "mass"),
             ("meta_group_id_raw", "metaGroupID"),
             ("name", "name.en"),
@@ -140,9 +214,13 @@ class ItemType(TypeBase):
             ("sound_id", "soundID"),
             ("variation_parent_type_id", "variationParentTypeID"),
             ("volume", "volume"),
+            ("packaged_volume", "packaged_volume"),  # from extras
         )
         update_fields = False
         custom_names = False
+        extra_data = (
+            ("https://sde.hoboleaks.space/tq/repackagedvolumes.json", "id_dict", ("packaged_volume",)),
+        )
 
     # Model Fields
     base_price = models.FloatField(null=True, blank=True, default=None)
@@ -152,7 +230,7 @@ class ItemType(TypeBase):
     graphic_id = models.IntegerField(null=True, blank=True, default=None)
     group = models.ForeignKey(ItemGroup, on_delete=models.SET_NULL, null=True, blank=True, default=None)
     icon_id = models.IntegerField(null=True, blank=True, default=None)
-    market_group_id_raw = models.IntegerField(null=True, blank=True, default=None)
+    market_group = models.ForeignKey(ItemMarketGroup, on_delete=models.SET_NULL, null=True, blank=True, default=None)
     mass = models.FloatField(null=True, blank=True, default=None)
     meta_group_id_raw = models.IntegerField(null=True, blank=True, default=None)
     portion_size = models.IntegerField(null=True, blank=True, default=None)
@@ -162,6 +240,11 @@ class ItemType(TypeBase):
     sound_id = models.IntegerField(null=True, blank=True, default=None)
     variation_parent_type_id = models.IntegerField(null=True, blank=True, default=None)
     volume = models.FloatField(null=True, blank=True, default=None)
+    packaged_volume = models.FloatField(null=True, blank=True, default=None)
+
+    @property
+    def market_group_id_raw(self) -> int | None:
+        return self.market_group.id if self.market_group else None
 
 
 class ItemTypeMaterials(JSONModel):
@@ -359,89 +442,163 @@ class DogmaAttribute(TypeBase):
     unit = models.ForeignKey(DogmaUnit, null=True, blank=True, default=None, on_delete=models.CASCADE)
 
 
-# class DogmaEffect(TypeBase):
-#     """
-#     dogmaEffects.jsonl
-#         _key : int
-#         disallowAutoRepeat : bool
-#         dischargeAttributeID : int
-#         durationAttributeID : int
-#         effectCategoryID : int
-#         electronicChance : bool
-#         guid : str
-#         isAssistance : bool
-#         isOffensive : bool
-#         isWarpSafe : bool
-#         name : str
-#         propulsionChance : bool
-#         published : bool
-#         rangeChance : bool
-#         distribution : int
-#         falloffAttributeID : int
-#         rangeAttributeID : int
-#         trackingSpeedAttributeID : int
-#         description : dict
-#             description.de : str
-#             description.en : str
-#             description.es : str
-#             description.fr : str
-#             description.ja : str
-#             description.ko : str
-#             description.ru : str
-#             description.zh : str
-#         displayName : dict
-#             displayName.de : str
-#             displayName.en : str
-#             displayName.es : str
-#             displayName.fr : str
-#             displayName.ja : str
-#             displayName.ko : str
-#             displayName.ru : str
-#             displayName.zh : str
-#         iconID : int
-#         * modifierInfo : list
-#         npcUsageChanceAttributeID : int
-#         npcActivationChanceAttributeID : int
-#         fittingUsageChanceAttributeID : int
-#         resistanceAttributeID : int
-#     """
-#     # JsonL Params
-#     class Import:
-#         filename = "dogmaUnits.jsonl"
-#         lang_fields = [("display_name", "displayName"), "description"]
-#         data_map = (
-#             ("name", "name"),
-#             # TODO this...
-#         )
-#         update_fields = False
-#         custom_names = False
+class DogmaEffect(TypeBase):
+    """
+    dogmaEffects.jsonl
+        _key : int
+        disallowAutoRepeat : bool
+        dischargeAttributeID : int
+        durationAttributeID : int
+        effectCategoryID : int
+        electronicChance : bool
+        guid : str
+        isAssistance : bool
+        isOffensive : bool
+        isWarpSafe : bool
+        name : str
+        propulsionChance : bool
+        published : bool
+        rangeChance : bool
+        distribution : int
+        falloffAttributeID : int
+        rangeAttributeID : int
+        trackingSpeedAttributeID : int
+        description : dict
+            ...
+        displayName : dict
+            ...
+        iconID : int
+        * modifierInfo : list
+        npcUsageChanceAttributeID : int
+        npcActivationChanceAttributeID : int
+        fittingUsageChanceAttributeID : int
+        resistanceAttributeID : int
+    """
+    # JsonL Params
+    class Import:
+        filename = "dogmaEffects.jsonl"
+        lang_fields = [("display_name", "displayName"), "description"]
+        data_map = (
+            ("disallow_auto_repeat", "disallowAutoRepeat"),
+            ("discharge_attribute_id_raw", "dischargeAttributeID"),
+            ("duration_attribute_id_raw", "durationAttributeID"),
+            ("effect_category_id_raw", "effectCategoryID"),
+            ("electronic_chance", "electronicChance"),
+            ("guid", "guid"),
+            ("is_assistance", "isAssistance"),
+            ("is_offensive", "isOffensive"),
+            ("is_warp_safe", "isWarpSafe"),
+            ("name", "name"),
+            ("propulsion_chance", "propulsionChance"),
+            ("published", "published"),
+            ("range_chance", "rangeChance"),
+            ("distribution", "distribution"),
+            ("falloff_attribute_id_raw", "falloffAttributeID"),
+            ("range_attribute_id_raw", "rangeAttributeID"),
+            ("tracking_speed_attribute_id_raw", "trackingSpeedAttributeID"),
+            ("icon_id", "iconID"),
+            ("npc_usage_chance_attribute_id_raw", "npcUsageChanceAttributeID"),
+            ("npc_activation_chance_attribute_id_raw", "npcActivationChanceAttributeID"),
+            ("fitting_usage_chance_attribute_id_raw", "fittingUsageChanceAttributeID"),
+            ("resistance_attribute_id_raw", "resistanceAttributeID")
+        )
+        update_fields = False
+        custom_names = False
 
-#     description = models.TextField(null=True, blank=True, default=None)  # _en
-#     display_name = models.CharField(max_length=250, null=True, blank=True, default=None)  # _en
+    description = models.TextField(null=True, blank=True, default=None)  # _en
+    display_name = models.CharField(max_length=250, null=True, blank=True, default=None)  # _en
 
-#     disallow_auto_repeat = models.BooleanField(null=True, blank=True, default=None)
+    name = models.CharField(max_length=250, null=True, blank=True, default=None)
 
-#     discharge_attribute_id_raw = models.IntegerField(null=True, blank=True, default=None)
-#     duration_attribute_id_raw = models.IntegerField(null=True, blank=True, default=None)
-#     effect_category_id_raw = models.IntegerField(null=True, blank=True, default=None)
-#     electronic_chance = models.BooleanField(null=True, blank=True, default=None)
-#     guid = models.CharField(max_length=250, null=True, blank=True, default=None)
-#     is_assistance = models.BooleanField(null=True, blank=True, default=None)
-#     is_offensive = models.BooleanField(null=True, blank=True, default=None)
-#     is_offensive = models.BooleanField(null=True, blank=True, default=None)
-#     is_warp_safe = models.BooleanField(null=True, blank=True, default=None)
-#     propulsion_chance = models.BooleanField(null=True, blank=True, default=None)
-#     published = models.BooleanField(null=True, blank=True, default=None)
-#     range_chance = models.BooleanField(null=True, blank=True, default=None)
-#     distribution = models.IntegerField(null=True, blank=True, default=None)
-#     falloff_attribute_id_raw = models.IntegerField(null=True, blank=True, default=None)
-#     range_attribute_id_raw = models.IntegerField(null=True, blank=True, default=None)
-#     tracking_speed_attribute_id_raw = models.IntegerField(null=True, blank=True, default=None)
-#     icon_id = models.IntegerField(null=True, blank=True, default=None)
-#     npc_usage_chance_attribute_id_raw = models.IntegerField(null=True, blank=True, default=None)
-#     npc_activation_chance_attribute_id_raw = models.IntegerField(null=True, blank=True, default=None)
-#     fitting_usage_chance_attribute_id_raw = models.IntegerField(null=True, blank=True, default=None)
-#     resistance_attribute_id_raw = models.IntegerField(null=True, blank=True, default=None)
+    disallow_auto_repeat = models.BooleanField(null=True, blank=True, default=None)
+
+    discharge_attribute_id_raw = models.IntegerField(null=True, blank=True, default=None)
+    duration_attribute_id_raw = models.IntegerField(null=True, blank=True, default=None)
+    effect_category_id_raw = models.IntegerField(null=True, blank=True, default=None)
+    electronic_chance = models.BooleanField(null=True, blank=True, default=None)
+    guid = models.CharField(max_length=250, null=True, blank=True, default=None)
+    is_assistance = models.BooleanField(null=True, blank=True, default=None)
+    is_offensive = models.BooleanField(null=True, blank=True, default=None)
+    is_warp_safe = models.BooleanField(null=True, blank=True, default=None)
+    propulsion_chance = models.BooleanField(null=True, blank=True, default=None)
+    published = models.BooleanField(null=True, blank=True, default=None)
+    range_chance = models.BooleanField(null=True, blank=True, default=None)
+    distribution = models.IntegerField(null=True, blank=True, default=None)
+    falloff_attribute_id_raw = models.IntegerField(null=True, blank=True, default=None)
+    range_attribute_id_raw = models.IntegerField(null=True, blank=True, default=None)
+    tracking_speed_attribute_id_raw = models.IntegerField(null=True, blank=True, default=None)
+    icon_id = models.IntegerField(null=True, blank=True, default=None)
+    npc_usage_chance_attribute_id_raw = models.IntegerField(null=True, blank=True, default=None)
+    npc_activation_chance_attribute_id_raw = models.IntegerField(null=True, blank=True, default=None)
+    fitting_usage_chance_attribute_id_raw = models.IntegerField(null=True, blank=True, default=None)
+    resistance_attribute_id_raw = models.IntegerField(null=True, blank=True, default=None)
+
+
+class TypeEffect(JSONModel):
+    """
+    typeDogma.jsonl
+        _key : int
+        * dogmaAttributes : list
+            attributeID: int
+            value: float
+        dogmaEffects : list
+            effectID: int
+            isDefault: bool
+    """
+    # JsonL Params
+    class Import:
+        filename = "typeDogma.jsonl"
+        lang_fields = False
+        data_map = (
+            ("item_type_id", "_key"),
+            ("dogma_effect_id", "effectID"),
+        )
+        update_fields = False
+        custom_names = False
+
+    item_type = models.ForeignKey(
+        ItemType,
+        on_delete=models.CASCADE,
+        related_name="effect",
+        null=True,
+        blank=True,
+        default=None
+    )
+
+    dogma_effect = models.ForeignKey(
+        DogmaEffect,
+        on_delete=models.CASCADE,
+        related_name="+",
+        null=True,
+        blank=True,
+        default=None
+    )
+
+    is_default = models.BooleanField(null=True, blank=True, default=False)
+
+    @classmethod
+    def from_jsonl(cls, json_data, name_lookup=False):
+        _out = []
+        _key = {"_key": json_data.get("_key")}
+
+        for ob in json_data.get("dogmaEffects", []):
+            _out.append(cls.map_to_model(ob | _key, name_lookup=name_lookup, pk=False))
+
+        return _out
+
+    @classmethod
+    def load_from_sde(cls, folder_name):
+        gate_qry = cls.objects.all()
+        if gate_qry.exists():
+            # speed and we are not caring about f-keys or signals on these models
+            gate_qry._raw_delete(gate_qry.db)
+        super().load_from_sde(folder_name)
+
+    class Meta:
+        default_permissions = ()
+
+    def __str__(self):
+        return f"{self.item_type} ({self.dogma_effect_id}: {self.dogma_effect.name})"
 
 
 class TypeDogma(JSONModel):
@@ -451,7 +608,7 @@ class TypeDogma(JSONModel):
         dogmaAttributes : list
             attributeID: int
             value: float
-        dogmaEffects : list
+        * dogmaEffects : list
             effectID: int
             isDefault: bool
     """

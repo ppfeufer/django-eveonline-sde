@@ -61,6 +61,8 @@ NOTIFICATIONS_MAX_PER_USER = 50
 #     }
 
 # Add any additional apps to this list.
+INSTALLED_APPS = ["modeltranslation",] + INSTALLED_APPS
+
 INSTALLED_APPS += [
     PACKAGE,
 ]

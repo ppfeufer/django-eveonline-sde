@@ -1,7 +1,7 @@
 # Django
 from django.core.management.base import BaseCommand
 
-# AA Example App
+# Django EVE SDE
 from eve_sde.sde_tasks import (
     download_extract_sde,
     process_from_sde,

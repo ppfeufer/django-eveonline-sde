@@ -1,16 +1,21 @@
 # Standard Library
 import json
-import logging
 from datetime import datetime, timezone
+
+# Third Party
+import httpx
 
 # Django
 from django.db import models
 from django.utils.translation import gettext as _
 
+# Alliance Auth
+from allianceauth.services.hooks import get_extension_logger
+
 from .admin import EveSDESection
 from .utils import get_langs, get_langs_for_field, lang_key, val_from_dict
 
-logger = logging.getLogger(__name__)
+logger = get_extension_logger(__name__)
 
 
 class JSONModel(models.Model):
@@ -20,6 +25,7 @@ class JSONModel(models.Model):
         lang_fields = False
         custom_names = False
         update_fields = False
+        extra_data = False
 
     @classmethod
     def map_to_model(cls, json_data, name_lookup=False, pk=True):
@@ -58,6 +64,31 @@ class JSONModel(models.Model):
 
     @classmethod
     def name_lookup(cls):
+        return False
+
+    @classmethod
+    def load_extra(cls):
+        if hasattr(cls.Import, "extra_data") and cls.Import.extra_data:
+            output = {}
+            for url, parser, fields in cls.Import.extra_data:
+                logger.info(f"Loading extra data from {url} for {cls.__name__}")
+                try:
+                    r = httpx.get(url)
+                    if r.status_code == 200:
+                        data = r.json()
+                        if parser == "id_dict":
+                            for item_id, value in data.items():
+                                id = int(item_id)
+                                if id not in output:
+                                    output[id] = {}
+                                for f in fields:
+                                    output[id][f] = value
+                    else:
+                        logger.error(
+                            f"Failed to load extra data from {url} for {cls.__name__}. Status code: {r.status_code}")
+                except Exception as e:
+                    logger.error(f"Error loading extra data from {url} for {cls.__name__}: {e}")
+            return output
         return False
 
     @classmethod
@@ -103,6 +134,7 @@ class JSONModel(models.Model):
         _updates = []
 
         name_lookup = cls.name_lookup()
+        extra_fields = cls.load_extra()
 
         pks = set(
             cls.objects.all().values_list("pk", flat=True)
@@ -121,14 +153,18 @@ class JSONModel(models.Model):
             while line := json_file.readline():
                 row += 1
                 rg = json.loads(line)
+                if extra_fields:
+                    if rg.get("_key") in extra_fields:
+                        for f, v in extra_fields[rg.get("_key")].items():
+                            rg[f] = v
                 _new = cls.from_jsonl(rg, name_lookup)
                 if isinstance(_new, list):
                     if pks:
                         for _i in _new:
                             if _i.pk in pks:
-                                _updates.append(_new)
+                                _updates.append(_i)
                             else:
-                                _creates.append(_new)
+                                _creates.append(_i)
                             total_read += 1
                     else:
                         _creates += _new
