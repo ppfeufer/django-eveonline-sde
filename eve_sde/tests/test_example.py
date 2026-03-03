@@ -5,8 +5,12 @@ Example Test
 # Django
 from django.test import TestCase
 
+from ..models import ItemType
+
 
 class TestExample(TestCase):
+    fixtures = ["eve_sde_sde"]
+
     """
     TestExample
     """
@@ -28,4 +32,4 @@ class TestExample(TestCase):
         :rtype:
         """
 
-        self.assertEqual(True, True)
+        self.assertEqual(True, ItemType.objects.filter(id=81143).exists())
