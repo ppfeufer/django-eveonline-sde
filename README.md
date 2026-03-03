@@ -19,6 +19,7 @@ See `eve_sde/sde_types.txt` for an idea of the top level fields that are availab
 - Planet
 - Moon
 - Stargate
+- Item Market Groups
 - Item Groups
 - Item Categories
 - Item Types
@@ -27,6 +28,10 @@ See `eve_sde/sde_types.txt` for an idea of the top level fields that are availab
 - Dogma Units
 - Dogma Attributes
 - Dogma Effects
+- Blueprints
+  - Activities
+    - Products
+    - Materials
 
 ## Setup
 
