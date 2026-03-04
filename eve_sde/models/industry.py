@@ -130,6 +130,8 @@ class BlueprintActivityProduct(JSONModel):
                     "blueprint_activity_id": BlueprintActivity.build_pk(json_data.get("_key"), activity_name),
                 }
                 for product in activity_data.get("products", []):
+                    if product.get("typeID") not in cls.pks:
+                        product["typeID"] = None
                     _out.append(cls.map_to_model(product | _activity, pk=False))
 
         return _out
@@ -139,6 +141,13 @@ class BlueprintActivityProduct(JSONModel):
         gate_qry = cls.objects.all()
         if gate_qry.exists():
             gate_qry._raw_delete(gate_qry.db)
+
+        # there is a bad typeID in the product list.
+        # we will just ignore them
+
+        cls.pks = set(
+            ItemType.objects.all().values_list("pk", flat=True)
+        )
         super().load_from_sde(folder_name)
 
     def __str__(self):

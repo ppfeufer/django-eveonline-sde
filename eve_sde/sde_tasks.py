@@ -89,13 +89,13 @@ def download_file(url, local_filename):
             with open(local_filename, "wb") as f:
                 for chunk in response.iter_bytes():
                     f.write(chunk)
-        print(f"File downloaded successfully to: {local_filename}")
+        logger.info(f"File downloaded successfully to: {local_filename}")
     except httpx.HTTPStatusError as e:
-        print(f"HTTP error during download: {e}")
+        logger.error(f"HTTP error during download: {e}")
     except httpx.RequestError as e:
-        print(f"Network error during download: {e}")
+        logger.error(f"Network error during download: {e}")
     except Exception as e:
-        print(f"An unexpected error occurred: {e}")
+        logger.exception(f"An unexpected error occurred: {e}")
 
 
 def delete_sde_zip():

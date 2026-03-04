@@ -73,6 +73,13 @@ graph_models:
 		--arrow-shape normal \
 		-o $(appname)-models.png
 
+# Graph models
+.PHONY: load_sde
+graph_models:
+	@echo "Test load the SDE"
+	@python ../myauth/manage.py \
+		esde_load_sde
+
 # Coverage
 .PHONY: coverage
 coverage:
