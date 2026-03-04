@@ -46,7 +46,7 @@ class Command(BaseCommand):
         return module
 
     def handle(self, *args, **options):
-        if not (not check_sde_version() and options["ignore_version"]):
+        if not (check_sde_version() or options["ignore_version"]):
             raise AssertionError("Your SDE version isn't up to date. Use the `esde_load_sde` command to update it.")
 
         application_label = options["application_label"]
