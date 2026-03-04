@@ -8,6 +8,9 @@ from types import ModuleType
 from django.apps import apps
 from django.core.management.base import BaseCommand
 
+# Django EVE SDE
+from eve_sde.sde_tasks import check_sde_version
+
 # AA Example App
 from eve_sde.test_data import dump_model_data
 
@@ -19,6 +22,8 @@ class Command(BaseCommand):
         parser.add_argument("application_label", type=str, help="Label of the application to generate test data")
         parser.add_argument("--force_editable", type=bool, default=False,
                             help="Force the data generation even if path doesn't appear to be editable")
+        parser.add_argument("--ignore_version", type=bool, default=False,
+                            help="Ignore the version check and generates data from current database")
 
     def _validate_application(self, application_label: str, force_editable: bool) -> ModuleType:
         """
@@ -41,6 +46,9 @@ class Command(BaseCommand):
         return module
 
     def handle(self, *args, **options):
+        if not (not check_sde_version() and options["ignore_version"]):
+            raise AssertionError("Your SDE version isn't up to date. Use the `esde_load_sde` command to update it.")
+
         application_label = options["application_label"]
         force_editable = options["force_editable"]
         module = self._validate_application(application_label, force_editable)
