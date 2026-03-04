@@ -47,10 +47,10 @@ def dump_model_data(specs: list[ModelSpec]) -> str:
 
         model = _get_model_class(spec)
         fields = {}
-        if not spec.key:
+        if not spec.field:
             fields["pk__in"] = spec.ids
         else:
-            fields[f"{spec.key}__in"] = spec.ids
+            fields[f"{spec.field}__in"] = spec.ids
         qry = model.objects.filter(**fields)
         for mdl in qry:
             parent_models += return_all_parent_model_fields(mdl)
