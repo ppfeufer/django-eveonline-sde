@@ -59,6 +59,8 @@ def dump_model_data(specs: list[ModelSpec]) -> str:
         objects_to_dump.extend(parent_models)
         objects_to_dump.extend(qry)
 
+    objects_to_dump = _remove_duplicates(objects_to_dump)
+
     serialized_data = serializers.serialize("json", objects_to_dump)
 
     return serialized_data
@@ -73,3 +75,26 @@ def _get_model_class(spec: ModelSpec) -> type[JSONModel]:
         raise TypeError(f"Invalid model class {spec.model_name}")
 
     return model
+
+
+def _remove_duplicates(objects_to_dump: list[type[Model]]):
+    """
+    Removes duplicates objects from the list.
+    Keeps the first object occurence.
+    """
+
+    indexes_to_remove = []
+    objects_met = set()
+
+    for i, object in enumerate(objects_to_dump):
+        if object in objects_met:
+            indexes_to_remove.append(i)
+        else:
+            objects_met.add(object)
+
+    indexes_to_remove.reverse()
+
+    for index in indexes_to_remove:
+        del objects_to_dump[index]
+
+    return objects_to_dump
