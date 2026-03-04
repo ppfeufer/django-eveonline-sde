@@ -25,10 +25,15 @@ def return_all_parent_model_fields(model: type[Model]) -> list[type[Model]]:
 
 @dataclass
 class ModelSpec:
-    """Defines a model to be saved in a file for testing"""
+    """Defines a model to be saved in a file for testing
+
+    model_name: the name of the model to save
+    ids: the list of ids to query for on the model
+    field: the field to filter on for the ids, defaults to pk
+    """
     model_name: str
     ids: list[int]
-    key: str | None = None
+    field: str | None = None
 
 
 def dump_model_data(specs: list[ModelSpec]) -> str:
