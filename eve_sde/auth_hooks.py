@@ -17,7 +17,7 @@ class ESDEMenuItem(MenuItemHook):
         # setup menu entry for sidebar
         MenuItemHook.__init__(
             self,
-            _("Eve SDE"),
+            _("EVE SDE"),
             "fa-solid fa-table-list fa-fw",
             "esde:index",
             navactive=["esde:"],
