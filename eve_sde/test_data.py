@@ -6,6 +6,7 @@ from django.apps import apps
 from django.core import serializers
 from django.db.models import Model
 
+# Django EVE SDE
 # AA Example App
 from eve_sde.models import JSONModel
 
@@ -27,6 +28,7 @@ class ModelSpec:
     """Defines a model to be saved in a file for testing"""
     model_name: str
     ids: list[int]
+    key: str | None = None
 
 
 def dump_model_data(specs: list[ModelSpec]) -> str:
@@ -39,7 +41,12 @@ def dump_model_data(specs: list[ModelSpec]) -> str:
     for spec in specs:
 
         model = _get_model_class(spec)
-        qry = model.objects.filter(id__in=spec.ids)
+        fields = {}
+        if not spec.key:
+            fields["pk__in"] = spec.ids
+        else:
+            fields[f"{spec.key}__in"] = spec.ids
+        qry = model.objects.filter(**fields)
         for mdl in qry:
             parent_models += return_all_parent_model_fields(mdl)
 
