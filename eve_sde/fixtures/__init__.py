@@ -1,4 +1,4 @@
-# AA Example App
+# Django EVE SDE
 from eve_sde.test_data import ModelSpec
 
 testdata_spec: list[ModelSpec] = [
