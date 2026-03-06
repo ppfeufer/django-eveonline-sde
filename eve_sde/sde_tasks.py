@@ -170,12 +170,15 @@ def set_sde_version():
     with open(f"{SDE_FOLDER}/_sde.jsonl") as json_file:
         sde_data = json.loads(json_file.read())
         build = sde_data.get("buildNumber", 0)
-        release = datetime.fromisoformat(sde_data.get("releaseDate"))
+        release_date = sde_data.get("releaseDate")
+        if release_date.endswith("Z"):
+            release_date = release_date[:-1] + "+00:00"
+
+        release = datetime.fromisoformat(release_date)
 
     _o = EveSDE.get_solo()
     _o.build_number = build
     _o.release_date = release
     _o.last_check_date = datetime.now(tz=timezone.utc)
     _o.save()
-    logger.info(f"SDE Updated to Build:{build} from:{release}")
     logger.info(f"SDE Updated to Build:{build} from:{release}")
